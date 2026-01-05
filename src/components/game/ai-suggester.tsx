@@ -17,14 +17,14 @@ export default function AISuggester({ item, onSelectName }: AISuggesterProps) {
   const { state } = useContext(GameContext);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
 
   const handleSuggestNames = async () => {
     if (!state) return;
     setIsLoading(true);
     setSuggestions([]);
     const level = state.levelIndex + 1;
-    const newSuggestions = await getAINameSuggestions(item.name, level);
+    const newSuggestions = await getAINameSuggestions(item.name, level, i18n.language);
     setSuggestions(newSuggestions);
     setIsLoading(false);
   };

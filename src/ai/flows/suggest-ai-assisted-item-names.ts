@@ -14,6 +14,7 @@ import {z} from 'genkit';
 const ItemNamingInputSchema = z.object({
   itemType: z.string().describe('The type of item to generate a name for.'),
   storeLevel: z.number().describe('The current level of the store.'),
+  language: z.string().describe('The language for the suggested names (e.g., "en", "ko").'),
 });
 
 export type ItemNamingInput = z.infer<typeof ItemNamingInputSchema>;
@@ -39,7 +40,9 @@ const prompt = ai.definePrompt({
   },
   prompt: `You are a creative naming assistant for a coffee shop tycoon game.
 
-  Suggest 5 creative and thematic names for a store item of type '{{itemType}}' for a store at level {{storeLevel}}.  The names should be related to coffee, business, or the item type.
+  Suggest 5 creative and thematic names for a store item of type '{{itemType}}' for a store at level {{storeLevel}}. The names should be related to coffee, business, or the item type.
+  
+  The suggestions should be in the language specified by the code: {{language}}.
 
   Return the names as a JSON array of strings.
   `,
