@@ -87,6 +87,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     case 'SET_PLAYER_NAME': {
         return { ...state, playerName: action.payload, isFirstLoad: false };
     }
+    case 'SET_DEFAULT_PLAYER_NAME': {
+        if (state.playerName) return state; // Don't override if name is already set
+        return { ...state, defaultPlayerName: action.payload };
+    }
     case 'GAME_TICK': {
       const now = Date.now();
       const delta = (now - state.lastTime) / 1000;
@@ -133,6 +137,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         };
       }
 
+      const showHint = now - state.lastClickTime > CLICK_HINT_IDLE_TIME;
+
       return {
         ...state,
         beans: state.beans + beansGained,
@@ -143,6 +149,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         isFever: newIsFever,
         levelIndex,
         goldenBean: newGoldenBean,
+        showClickHint: showHint,
       };
     }
     case 'CANVAS_CLICK': {
@@ -263,7 +270,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 export const GameContext = createContext<{ state: GameState; dispatch: React.Dispatch<GameAction> } | undefined>(undefined);
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
   const [state, dispatch] = useReducer(gameReducer, getInitialState(t));
   const { toast } = useToast();
   
@@ -271,7 +278,6 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const rankTimeoutRef = useRef<NodeJS.Timeout>();
   const messageTimeoutRef = useRef<NodeJS.Timeout>();
-  const clickHintTimeoutRef = useRef<NodeJS.Timeout>();
 
   const handleSave = useCallback((showToast: boolean) => {
     const { items, ...gameState } = state;
@@ -332,7 +338,18 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       console.error("Failed to load game state:", error);
       dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t) } });
     }
-  }, [t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
+
+  // Update default name when language changes
+  useEffect(() => {
+    if (state.isFirstLoad) {
+        const adjectives = t('random_adjectives', { returnObjects: true }) as string[];
+        const nouns = t('random_nouns', { returnObjects: true }) as string[];
+        const randomName = `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+        dispatch({ type: 'SET_DEFAULT_PLAYER_NAME', payload: randomName });
+    }
+  }, [t, i18n.language, state.isFirstLoad]);
   
   // Periodic Save
   useEffect(() => {
@@ -368,41 +385,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       return () => { if(messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current); };
   }, [state.playerName, state.goldenBean.active, t]);
 
-  // Click Hint Logic
-  useEffect(() => {
-    if (clickHintTimeoutRef.current) clearTimeout(clickHintTimeoutRef.current);
-
-    const checkIdle = () => {
-      const now = Date.now();
-      if (now - state.lastClickTime > CLICK_HINT_IDLE_TIME) {
-        // After 4s of idle, start toggling
-        const hintInterval = setInterval(() => {
-          dispatch({ type: 'TOGGLE_CLICK_HINT', payload: !state.showClickHint });
-        }, 700); // Blink every 0.7s
-
-        if (clickHintTimeoutRef.current) clearTimeout(clickHintTimeoutRef.current);
-        clickHintTimeoutRef.current = hintInterval;
-      } else {
-        // Not idle, make sure hint is hidden (or shown if you prefer)
-        if (state.showClickHint) {
-            dispatch({ type: 'TOGGLE_CLICK_HINT', payload: false });
-        }
-      }
-    };
-    
-    // Initial check
-    const initialTimeout = setTimeout(checkIdle, CLICK_HINT_IDLE_TIME);
-
-    return () => {
-      if (clickHintTimeoutRef.current) clearTimeout(clickHintTimeoutRef.current);
-      clearTimeout(initialTimeout);
-    };
-  }, [state.lastClickTime, state.showClickHint]);
-
-
   return (
     <GameContext.Provider value={{ state, dispatch: enhancedDispatch }}>
       {children}
     </GameContext.Provider>
   );
 };
+
+    

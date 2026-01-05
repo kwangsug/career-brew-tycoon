@@ -70,6 +70,7 @@ export type GameAction =
   | { type: 'LOAD_STATE'; payload: any }
   | { type: 'NEW_GAME', payload: { initialState: GameState } }
   | { type: 'SET_PLAYER_NAME'; payload: string }
+  | { type: 'SET_DEFAULT_PLAYER_NAME'; payload: string }
   | { type: 'GAME_TICK' }
   | { type: 'CANVAS_CLICK'; payload: { x: number; y: number } }
   | { type: 'BUY_ITEM'; payload: number }
@@ -82,3 +83,5 @@ export type GameAction =
   | { type: 'UPDATE_MY_RANK', payload: number | null }
   | { type: 'UPDATE_MESSAGE', payload: { t: (key: string, options?: any) => string } }
   | { type: 'TOGGLE_CLICK_HINT', payload: boolean };
+
+    
