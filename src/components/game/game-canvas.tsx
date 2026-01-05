@@ -160,7 +160,7 @@ const GameCanvas = () => {
       animationFrameId = requestAnimationFrame(render);
     };
 
-    const image = new Image();
+    const image = new window.Image();
     image.crossOrigin = "anonymous";
     image.src = "https://i.postimg.cc/CKrNbX4G/fd9845a6_1ac8_4dbb_9419_1fee5445e2c6.jpg";
     image.onload = () => {
