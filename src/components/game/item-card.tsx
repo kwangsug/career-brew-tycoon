@@ -80,9 +80,17 @@ export default function ItemCard({ item, index }: ItemCardProps) {
         className={`flex-shrink-0 min-w-[100px] ${canAfford ? 'bg-green-600 hover:bg-green-700 text-white animate-pulse-bg' : ''}`}
         size="sm"
       >
-        {!isOwned && !canAfford && <Lock className="mr-2 h-4 w-4" /> }
-        <span>🫘</span>
-        <span>{formatNum(price)}</span>
+        {canAfford ? (
+          <>
+            <span>🫘</span>
+            <span>{formatNum(price)}</span>
+          </>
+        ) : (
+          <>
+            <Lock className="mr-2 h-4 w-4" />
+            <span>{formatNum(price)}</span>
+          </>
+        )}
       </Button>
     </Card>
   );
