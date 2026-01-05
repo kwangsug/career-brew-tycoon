@@ -168,7 +168,7 @@ const GameCanvas = () => {
     <div className="relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm">
       <Image
         ref={roasterImgRef}
-        src="https://firebasestorage.googleapis.com/v0/b/genkit-llm-tools.appspot.com/o/career-brew%2Froaster-v3.png?alt=media&token=8363973a-4469-450f-89f4-2f22c17436b7"
+        src="https://storage.googleapis.com/aai-web-samples/career-brew/roaster-v3.png"
         data-ai-hint="coffee roaster illustration"
         alt="Coffee Roaster"
         width={200}
