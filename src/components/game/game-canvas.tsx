@@ -13,7 +13,7 @@ const GameCanvas = () => {
   const { t, i18n } = useI18n();
   const particlesRef = useRef<Particle[]>([]);
   const floatingTextsRef = useRef<FloatingText[]>([]);
-  const roasterImgRef = useRef<HTMLImageElement>(null);
+  const roasterImgRef = useRef<HTMLImageElement | null>(null);
   const clickScaleRef = useRef(1.0);
   
   useEffect(() => {
@@ -164,13 +164,8 @@ const GameCanvas = () => {
     image.crossOrigin = "anonymous";
     image.src = "https://i.postimg.cc/CKrNbX4G/fd9845a6_1ac8_4dbb_9419_1fee5445e2c6.jpg";
     image.onload = () => {
-      if (roasterImgRef.current) {
-        // This is a trick to make the hidden Image component load the image into the browser cache
-        // and get its properties, but we'll use a new Image object for drawing to have more control.
-      }
+      roasterImgRef.current = image;
     }
-    // @ts-ignore
-    roasterImgRef.current = image;
 
     render();
 
