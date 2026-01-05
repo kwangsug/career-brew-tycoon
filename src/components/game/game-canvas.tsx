@@ -174,7 +174,6 @@ const GameCanvas = () => {
         width={200}
         height={200}
         className="hidden"
-        unoptimized
       />
       <canvas
         ref={canvasRef}
@@ -190,5 +189,3 @@ const GameCanvas = () => {
 };
 
 export default GameCanvas;
-
-    
