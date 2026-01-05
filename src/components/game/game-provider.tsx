@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useReducer, useEffect, ReactNode, useRef } from 'react';
+import React, { createContext, useReducer, useEffect, ReactNode, useRef, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { GameState, GameAction, Item, Particle, FloatingText } from '@/types/game';
 import { initialItems, levels as levelNames } from '@/lib/game-data';
@@ -246,6 +246,39 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const rankTimeoutRef = useRef<NodeJS.Timeout>();
   const messageTimeoutRef = useRef<NodeJS.Timeout>();
 
+  const handleSave = useCallback((showToast: boolean) => {
+    const { items, ...gameState } = state;
+    const saveData = {
+      gameState,
+      items: items.map(item => ({ name: item.name, owned: item.owned, customName: item.customName })),
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+    if (state.playerId && state.playerName) {
+      const score = state.baseBps * (state.isFever ? 5 : 1);
+      saveToFirebase(state.playerId, state.playerName, score);
+    }
+    if (showToast) {
+      toast({ title: "💾 Game Saved", description: "Your progress has been saved locally and to the leaderboard." });
+    }
+  }, [state, toast]);
+
+  const handleReset = useCallback(() => {
+    if (window.confirm("⚠️ Are you sure you want to reset all progress? This cannot be undone.")) {
+      localStorage.removeItem(SAVE_KEY);
+      window.location.reload();
+    }
+  }, []);
+
+  const enhancedDispatch = useCallback((action: GameAction) => {
+    if (action.type === 'SAVE_GAME') {
+      handleSave(action.payload.showToast);
+    } else if (action.type === 'RESET_GAME') {
+      handleReset();
+    } else {
+      dispatch(action);
+    }
+  }, [handleSave, handleReset]);
+
   // Game Loop
   useEffect(() => {
     const loop = () => {
@@ -258,7 +291,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Load and Save Logic
+  // Load Logic
   useEffect(() => {
     initFirebase();
     try {
@@ -274,51 +307,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
   
-  const handleSave = (showToast: boolean) => {
-    const { items, ...gameState } = state;
-    const saveData = {
-      gameState,
-      items: items.map(item => ({ name: item.name, owned: item.owned, customName: item.customName })),
-    };
-    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-    if (state.playerId && state.playerName) {
-      const score = state.baseBps * (state.isFever ? 5 : 1);
-      saveToFirebase(state.playerId, state.playerName, score);
-    }
-    if (showToast) {
-      toast({ title: "💾 Game Saved", description: "Your progress has been saved locally and to the leaderboard." });
-    }
-  };
-
-  const handleReset = () => {
-    if (window.confirm("⚠️ Are you sure you want to reset all progress? This cannot be undone.")) {
-      localStorage.removeItem(SAVE_KEY);
-      window.location.reload();
-    }
-  };
-
-  // Reducer side-effect handler
-  useEffect(() => {
-    const currentState = state;
-    const originalDispatch = dispatch;
-    (dispatch as any) = (action: GameAction) => {
-      if (action.type === 'SAVE_GAME') {
-        handleSave(action.payload.showToast);
-      } else if (action.type === 'RESET_GAME') {
-        handleReset();
-      } else {
-        originalDispatch(action);
-      }
-    };
-    return () => { (dispatch as any) = originalDispatch; }
-  }, [state, toast]); // Re-create if state changes
-
   // Periodic Save
   useEffect(() => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
       saveTimeoutRef.current = setInterval(() => handleSave(false), 30000);
       return () => { if(saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current); };
-  }, [state.beans]); // Only reset interval if beans change to avoid running on every render
+  }, [handleSave]);
 
   // Periodic Rank Fetch
   useEffect(() => {
@@ -348,7 +342,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   }, [state.playerName, state.goldenBean.active]);
 
   return (
-    <GameContext.Provider value={{ state, dispatch }}>
+    <GameContext.Provider value={{ state, dispatch: enhancedDispatch }}>
       {children}
     </GameContext.Provider>
   );
