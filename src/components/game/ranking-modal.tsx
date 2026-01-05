@@ -13,7 +13,7 @@ import { useI18n } from '@/locales/client';
 
 type TabName = 'national' | 'regional' | 'friend';
 
-const RankItem = ({ rank, entry, isMe, youText, lang }: { rank: number, entry: RankEntry, isMe: boolean, youText: string, lang: string }) => {
+const RankItem = ({ rank, entry, isMe, youText, lang, perSecondText }: { rank: number, entry: RankEntry, isMe: boolean, youText: string, lang: string, perSecondText: string }) => {
   const rankBadge = () => {
     if (rank === 1) return <span className="text-yellow-400"><Crown className="w-5 h-5" /></span>;
     if (rank === 2) return <span className="text-gray-400"><Crown className="w-5 h-5" /></span>;
@@ -22,6 +22,9 @@ const RankItem = ({ rank, entry, isMe, youText, lang }: { rank: number, entry: R
   };
 
   const displayName = isMe ? `${entry.name} ${youText}` : entry.name;
+  const scoreDisplay = lang === 'ko'
+    ? `${perSecondText} ${formatNum(entry.score, lang)}`
+    : `${formatNum(entry.score, lang)} BPS`;
 
   return (
     <div className={`flex items-center justify-between p-2 rounded-lg ${isMe ? 'bg-primary/10' : ''}`}>
@@ -29,7 +32,7 @@ const RankItem = ({ rank, entry, isMe, youText, lang }: { rank: number, entry: R
         <div className="font-bold text-lg w-5 text-center">{rankBadge()}</div>
         <div className={`font-bold ${isMe ? 'text-primary' : ''}`}>{displayName}</div>
       </div>
-      <div className="font-mono font-bold">{formatNum(entry.score, lang)} BPS</div>
+      <div className="font-mono font-bold">{scoreDisplay}</div>
     </div>
   );
 };
@@ -101,7 +104,7 @@ export default function RankingModal() {
     }
 
     return data.map((entry, index) => (
-      <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} lang={i18n.language} />
+      <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
     ));
   };
 
