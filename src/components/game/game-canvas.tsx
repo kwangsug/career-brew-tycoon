@@ -168,7 +168,7 @@ const GameCanvas = () => {
   }, [state, t, i18n.language]);
 
   return (
-    <div className="relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm overflow-hidden">
+    <div className={`relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm overflow-hidden ${state?.isFever ? 'fever-bg' : ''}`}>
       <Image
         ref={roasterImgRef}
         src="https://i.postimg.cc/CKrNbX4G/fd9845a6_1ac8_4dbb_9419_1fee5445e2c6.jpg"
