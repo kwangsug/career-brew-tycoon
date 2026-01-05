@@ -46,7 +46,7 @@ export default function ItemCard({ item, index }: ItemCardProps) {
 
   return (
     <Card
-      className={`p-3 flex items-center justify-between gap-2 transition-all duration-200 relative overflow-hidden ${isOwned ? 'cursor-pointer hover:bg-card/60' : 'bg-muted/50 opacity-80'}`}
+      className={`p-3 flex items-center justify-between gap-2 transition-all duration-200 relative overflow-hidden ${isOwned ? 'cursor-pointer hover:bg-card/60' : 'bg-muted/50'}`}
       onClick={handleOpenPopup}
     >
       <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -67,9 +67,11 @@ export default function ItemCard({ item, index }: ItemCardProps) {
           <p className="font-bold font-headline text-base truncate" title={item.customName || t(item.id)}>
             {item.customName || t(item.id)}
           </p>
-          <p className="text-xs font-bold text-green-600 dark:text-green-400">
-            {item.type === 'click' ? t('click_short') : t('sec_short')}: +{formatNum(item.val)}
-          </p>
+          {isOwned && (
+            <p className="text-xs font-bold text-green-600 dark:text-green-400">
+              {item.type === 'click' ? t('click_short') : t('sec_short')}: +{formatNum(item.val)}
+            </p>
+          )}
         </div>
       </div>
       <Button
