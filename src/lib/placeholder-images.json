@@ -1,3 +1,232 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "ph_0",
+      "description": "Moka Pot",
+      "imageUrl": "https://images.unsplash.com/photo-1515442261605-65987783cb6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb2ZmZWUlMjBwb3R8ZW58MHx8fHwxNzY3NTc2MjMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "coffee pot"
+    },
+    {
+      "id": "ph_1",
+      "description": "Rubber Gloves",
+      "imageUrl": "https://images.unsplash.com/photo-1601155471381-c3d394462087?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxydWJiZXIlMjBnbG92ZXN8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rubber gloves"
+    },
+    {
+      "id": "ph_2",
+      "description": "Home Machine",
+      "imageUrl": "https://images.unsplash.com/photo-1552833755-fdb50eeb8cf1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjb2ZmZWUlMjBtYWNoaW5lfGVufDB8fHx8MTc2NzQ2NDUwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "coffee machine"
+    },
+    {
+      "id": "ph_3",
+      "description": "Bean Hammer",
+      "imageUrl": "https://images.unsplash.com/photo-1679210208120-1b6a008be9b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxoYW1tZXJ8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hammer"
+    },
+    {
+      "id": "ph_4",
+      "description": "Commercial Machine",
+      "imageUrl": "https://images.unsplash.com/photo-1493063680674-60c8a27c92a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZXNwcmVzc28lMjBtYWNoaW5lfGVufDB8fHx8MTc2NzUyNjA2OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "espresso machine"
+    },
+    {
+      "id": "ph_5",
+      "description": "Hand Roaster",
+      "imageUrl": "https://images.unsplash.com/photo-1694099164129-3ba730e370d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxyb2FzdGVyfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "roaster"
+    },
+    {
+      "id": "ph_6",
+      "description": "Franchise",
+      "imageUrl": "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzdG9yZWZyb250fGVufDB8fHx8MTc2NzU1OTU5Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "storefront"
+    },
+    {
+      "id": "ph_7",
+      "description": "Barista Lv.1",
+      "imageUrl": "https://images.unsplash.com/photo-1614036417651-efe5912149d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjZXJ0aWZpY2F0ZXxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "certificate"
+    },
+    {
+      "id": "ph_8",
+      "description": "Smart Factory",
+      "imageUrl": "https://images.unsplash.com/photo-1610891015188-5369212db097?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmYWN0b3J5fGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "factory"
+    },
+    {
+      "id": "ph_9",
+      "description": "Electric Gloves",
+      "imageUrl": "https://images.unsplash.com/photo-1758521960081-bafb7f686860?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwb3dlciUyMGdsb3ZlfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "power glove"
+    },
+    {
+      "id": "ph_10",
+      "description": "Bean Trading Ship",
+      "imageUrl": "https://images.unsplash.com/photo-1604506522146-316c8bedd874?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjYXJnbyUyMHNoaXB8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cargo ship"
+    },
+    {
+      "id": "ph_11",
+      "description": "Cyborg Arm",
+      "imageUrl": "https://images.unsplash.com/photo-1680783954745-3249be59e527?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxyb2JvdGljJTIwYXJtfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "robotic arm"
+    },
+    {
+      "id": "ph_12",
+      "description": "Coffee Empire HQ",
+      "imageUrl": "https://images.unsplash.com/photo-1512403754473-27835f7b9984?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxza3lzY3JhcGVyfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "skyscraper"
+    },
+    {
+      "id": "ph_13",
+      "description": "Mutant Hand",
+      "imageUrl": "https://images.unsplash.com/photo-1635433620327-c45fda735c18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtb25zdGVyJTIwaGFuZHxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "monster hand"
+    },
+    {
+      "id": "ph_14",
+      "description": "AI Legion",
+      "imageUrl": "https://images.unsplash.com/photo-1763656443782-51258b018237?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyb2JvdCUyMGFybXl8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "robot army"
+    },
+    {
+      "id": "ph_15",
+      "description": "Brainwave Roasting",
+      "imageUrl": "https://images.unsplash.com/photo-1617791160536-598cf32026fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxicmFpbiUyMHdhdmVzfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "brain waves"
+    },
+    {
+      "id": "ph_16",
+      "description": "Rainmaking Satellite",
+      "imageUrl": "https://images.unsplash.com/photo-1460186136353-977e9d6085a1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzYXRlbGxpdGV8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "satellite"
+    },
+    {
+      "id": "ph_17",
+      "description": "Magma Touch",
+      "imageUrl": "https://images.unsplash.com/photo-1580250642511-1660fe42ad58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx2b2xjYW5vfGVufDB8fHx8MTc2NzUyOTY2NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "volcano"
+    },
+    {
+      "id": "ph_18",
+      "description": "Moon Drying Yard",
+      "imageUrl": "https://images.unsplash.com/photo-1686861453864-9b2a22a97fc9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtb29uJTIwc3VyZmFjZXxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "moon surface"
+    },
+    {
+      "id": "ph_19",
+      "description": "Meteor Strike",
+      "imageUrl": "https://images.unsplash.com/photo-1534190938029-2d03c3bec5fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZXRlb3IlMjBzaG93ZXJ8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "meteor shower"
+    },
+    {
+      "id": "ph_20",
+      "description": "Fusion Boiler",
+      "imageUrl": "https://images.unsplash.com/photo-1742868305923-b7b103e70b57?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmdXNpb24lMjByZWFjdG9yfGVufDB8fHx8MTc2NzUwNzQ2OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fusion reactor"
+    },
+    {
+      "id": "ph_21",
+      "description": "Solar Flare Punch",
+      "imageUrl": "https://images.unsplash.com/photo-1542317408-e53f9677deb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzb2xhciUyMGZsYXJlfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "solar flare"
+    },
+    {
+      "id": "ph_22",
+      "description": "Black Hole Grinder",
+      "imageUrl": "https://images.unsplash.com/photo-1707058665477-560297ffe913?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxibGFjayUyMGhvbGV8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "black hole"
+    },
+    {
+      "id": "ph_23",
+      "description": "Warp Click",
+      "imageUrl": "https://images.unsplash.com/photo-1689258994007-b09228c76cba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b3JtaG9sZXxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wormhole"
+    },
+    {
+      "id": "ph_24",
+      "description": "Big Bang Roaster",
+      "imageUrl": "https://images.unsplash.com/photo-1710676826551-eb64c9141180?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxiaWclMjBiYW5nfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "big bang"
+    },
+    {
+      "id": "ph_25",
+      "description": "Reality Manipulation",
+      "imageUrl": "https://picsum.photos/seed/ph_25/48/48",
+      "imageHint": "reality warp"
+    },
+    {
+      "id": "ph_26",
+      "description": "Time Machine Delivery",
+      "imageUrl": "https://images.unsplash.com/photo-1654647885351-d14c5ad5ed47?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx0aW1lJTIwbWFjaGluZXxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "time machine"
+    },
+    {
+      "id": "ph_27",
+      "description": "Time Reversal",
+      "imageUrl": "https://images.unsplash.com/photo-1611946258523-9c2bfabb94e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyZXdpbmQlMjBjbG9ja3xlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rewind clock"
+    },
+    {
+      "id": "ph_28",
+      "description": "Multiverse Chain",
+      "imageUrl": "https://images.unsplash.com/photo-1611532798972-896a7863fbf6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bXVsdGl2ZXJzZXxlbnwwfHx8fDE3Njc1ODA5NjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "multiverse"
+    },
+    {
+      "id": "ph_29",
+      "description": "Doppelgänger Worker",
+      "imageUrl": "https://images.unsplash.com/photo-1616709622415-cf0c96a6595c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjbG9uZXxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "clone"
+    },
+    {
+      "id": "ph_30",
+      "description": "Idea Roasting",
+      "imageUrl": "https://images.unsplash.com/photo-1709651669999-57741c9bf085?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxnbG93aW5nJTIwYnJhaW58ZW58MHx8fHwxNzY3NTIxMDE0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "glowing brain"
+    },
+    {
+      "id": "ph_31",
+      "description": "Infinite Spoon",
+      "imageUrl": "https://images.unsplash.com/photo-1548866616-463d69c477f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxpbmZpbml0eSUyMHNwb29ufGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "infinity spoon"
+    },
+    {
+      "id": "ph_32",
+      "description": "Developer Console",
+      "imageUrl": "https://images.unsplash.com/photo-1595623654300-b27329804025?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb2RlJTIwdGVybWluYWx8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "code terminal"
+    },
+    {
+      "id": "ph_33",
+      "description": "God of the Game",
+      "imageUrl": "https://images.unsplash.com/photo-1760875626607-62971a3a2b5e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxnb2QlMjBjcm93bnxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "god crown"
+    },
+    {
+      "id": "ph_34",
+      "description": "Planet Devourer",
+      "imageUrl": "https://images.unsplash.com/photo-1640386355103-83ebf7c6c83e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwbGFuZXQlMjBlYXRlcnxlbnwwfHx8fDE3Njc1ODA5NjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "planet eater"
+    },
+    {
+      "id": "ph_35",
+      "description": "Cosmic Touch",
+      "imageUrl": "https://images.unsplash.com/photo-1637988936317-95d5b3904fdf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb3NtaWMlMjBoYW5kfGVufDB8fHx8MTc2NzU4MDk2Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cosmic hand"
+    },
+    {
+      "id": "ph_36",
+      "description": "Eternal Time",
+      "imageUrl": "https://images.unsplash.com/photo-1592117138541-1a7d88b7d266?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxob3VyZ2xhc3N8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "hourglass"
+    },
+    {
+      "id": "ph_37",
+      "description": "Creator's Touch",
+      "imageUrl": "https://images.unsplash.com/photo-1574740601012-f6f25029b347?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxnb2RseSUyMGhhbmR8ZW58MHx8fHwxNzY3NTgwOTYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "godly hand"
+    }
+  ]
 }
