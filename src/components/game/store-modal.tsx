@@ -26,9 +26,9 @@ export default function StoreModal() {
           <DialogTitle className="font-headline text-2xl text-center">🛒 {t('store_title')}</DialogTitle>
           <DialogDescription className="text-center">{t('store_subtitle')}</DialogDescription>
         </DialogHeader>
-        <div className="flex-grow min-h-0">
-          <ScrollArea className="h-full pr-4">
-            <div className="space-y-3">
+        <div className="relative flex-1 -mx-6 overflow-hidden">
+          <ScrollArea className="h-full px-6">
+            <div className="space-y-3 pb-6">
               {state?.items.map((item, index) => (
                 <ItemCard key={item.id} item={item} index={index} />
               ))}
