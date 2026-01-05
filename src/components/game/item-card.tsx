@@ -67,7 +67,7 @@ export default function ItemCard({ item, index }: ItemCardProps) {
           <p className="font-bold font-headline text-base truncate" title={item.customName || t(item.id)}>
             {item.customName || t(item.id)}
           </p>
-          {isOwned && (
+          {(isOwned || canAfford) && (
             <p className="text-xs font-bold text-green-600 dark:text-green-400">
               {item.type === 'click' ? t('click_short') : t('sec_short')}: +{formatNum(item.val)}
             </p>
