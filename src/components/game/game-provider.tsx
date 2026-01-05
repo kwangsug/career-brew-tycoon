@@ -2,9 +2,10 @@
 
 import React, { createContext, useReducer, useEffect, ReactNode, useRef, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { GameState, GameAction, Item, Particle, FloatingText } from '@/types/game';
+import { GameState, GameAction, Item } from '@/types/game';
 import { initialItems, levels as levelNames } from '@/lib/game-data';
 import { initFirebase, saveToFirebase, fetchMyRank } from '@/lib/firebase';
+import { useI18n } from '@/locales/client';
 
 const SAVE_KEY = 'careerBrewSaveV1.0';
 const GOLDEN_INTERVAL = 10 * 60 * 1000; // 10 minutes
@@ -142,7 +143,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           const gb = state.goldenBean;
           const dist = Math.sqrt((x - gb.x)**2 + (y - gb.y)**2);
           if (dist < 60) {
-              const newFloatingTexts: FloatingText[] = [...state.floatingTexts, { x, y, val: "LUCKY!", life: 2.0, color: "#ffd700" }];
+              const newFloatingTexts = [...state.floatingTexts, { x, y, val: "LUCKY!", life: 2.0, color: "#ffd700" }];
               return { ...state, goldenBean: { ...gb, active: false }, isFever: true, feverGauge: 100, floatingTexts: newFloatingTexts, nextGoldenTime: Date.now() + GOLDEN_INTERVAL };
           }
       }
@@ -157,10 +158,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         if (newFeverGauge >= 100) newIsFever = true;
       }
       
-      const newParticles: Particle[] = [...state.particles];
+      const newParticles = [...state.particles];
       for(let j=0; j<6; j++) { newParticles.push({x: x, y: y, vx:(Math.random()-0.5)*15, vy:(Math.random()-0.5)*15-5, life:1}); }
 
-      const newFloatingTexts: FloatingText[] = [...state.floatingTexts, { x, y, val: clickGain, life: 1.0 }];
+      const newFloatingTexts = [...state.floatingTexts, { x, y, val: clickGain, life: 1.0 }];
 
       return {
         ...state,
@@ -213,20 +214,22 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       return { ...state, isRankingModalOpen: action.payload };
     case 'UPDATE_MY_RANK':
       return { ...state, myRank: action.payload };
-    case 'UPDATE_MESSAGE':
+    case 'UPDATE_MESSAGE': {
+        const { t } = action.payload;
         const messageTemplates = [
-            "{name}, more caffeine is needed!",
-            "Sleep is for the weak, {name}!",
-            "The coffee shop next door is watching you, {name}.",
-            "{name}'s fingers are a national treasure.",
-            "To Mars we go, {name}!",
-            "Rank 1 is just around the corner, {name}!",
-            "It's not a bug, it's your skill, {name}.",
-            "{name}, you're working overtime today, right?",
-            "You've become a money-making machine, {name}.",
+            t('message1', { name: state.playerName || t('barista') }),
+            t('message2', { name: state.playerName || t('barista') }),
+            t('message3', { name: state.playerName || t('barista') }),
+            t('message4', { name: state.playerName || t('barista') }),
+            t('message5', { name: state.playerName || t('barista') }),
+            t('message6', { name: state.playerName || t('barista') }),
+            t('message7', { name: state.playerName || t('barista') }),
+            t('message8', { name: state.playerName || t('barista') }),
+            t('message9', { name: state.playerName || t('barista') }),
         ];
         const template = messageTemplates[Math.floor(Math.random() * messageTemplates.length)];
-        return { ...state, message: template.replace("{name}", state.playerName || 'barista') };
+        return { ...state, message: template };
+    }
     case 'SAVE_GAME': // This is just for triggering the effect
       return state;
     case 'RESET_GAME': // This is just for triggering the effect
@@ -241,6 +244,7 @@ export const GameContext = createContext<{ state: GameState; dispatch: React.Dis
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
   const { toast } = useToast();
+  const { t } = useI18n();
   const gameLoopRef = useRef<number>();
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const rankTimeoutRef = useRef<NodeJS.Timeout>();
@@ -258,16 +262,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       saveToFirebase(state.playerId, state.playerName, score);
     }
     if (showToast) {
-      toast({ title: "💾 Game Saved", description: "Your progress has been saved locally and to the leaderboard." });
+      toast({ title: t('game_saved_title'), description: t('game_saved_desc') });
     }
-  }, [state, toast]);
+  }, [state, toast, t]);
 
   const handleReset = useCallback(() => {
-    if (window.confirm("⚠️ Are you sure you want to reset all progress? This cannot be undone.")) {
+    if (window.confirm(t('reset_confirm'))) {
       localStorage.removeItem(SAVE_KEY);
       window.location.reload();
     }
-  }, []);
+  }, [t]);
 
   const enhancedDispatch = useCallback((action: GameAction) => {
     if (action.type === 'SAVE_GAME') {
@@ -335,11 +339,11 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
       messageTimeoutRef.current = setInterval(() => {
           if(!state.goldenBean.active) {
-            dispatch({type: 'UPDATE_MESSAGE'});
+            dispatch({type: 'UPDATE_MESSAGE', payload: { t }});
           }
       }, 7000);
       return () => { if(messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current); };
-  }, [state.playerName, state.goldenBean.active]);
+  }, [state.playerName, state.goldenBean.active, t]);
 
   return (
     <GameContext.Provider value={{ state, dispatch: enhancedDispatch }}>

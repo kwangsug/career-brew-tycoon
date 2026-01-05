@@ -5,10 +5,12 @@ import { GameContext } from './game-provider';
 import { formatNum } from '@/lib/utils';
 import Image from 'next/image';
 import type { Particle, FloatingText } from '@/types/game';
+import { useI18n } from '@/locales/client';
 
 const GameCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { state, dispatch } = useContext(GameContext);
+  const { t } = useI18n();
   const particlesRef = useRef<Particle[]>([]);
   const floatingTextsRef = useRef<FloatingText[]>([]);
   const beanImgRef = useRef<HTMLImageElement>(null);
@@ -123,7 +125,9 @@ const GameCanvas = () => {
           ctx.font = `900 ${isFever ? '24px' : '18px'} var(--font-body)`;
           ctx.fillStyle = ft.color || (isFever ? '#d50000' : '#fff');
           ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4;
-          ctx.fillText(`+${typeof ft.val === 'number' ? formatNum(ft.val) : ft.val} ${typeof ft.val === 'number' ? '🫘' : ''}`, ft.x, ft.y); ctx.restore();
+          const text = ft.val === 'LUCKY!' ? t('lucky') : `+${typeof ft.val === 'number' ? formatNum(ft.val) : ft.val} ${typeof ft.val === 'number' ? '🫘' : ''}`;
+          ctx.fillText(text, ft.x, ft.y); 
+          ctx.restore();
       });
       ctx.textAlign = 'start';
       
@@ -137,7 +141,7 @@ const GameCanvas = () => {
       ctx.fillStyle = 'hsl(var(--foreground) / 0.8)';
       ctx.font = '900 16px var(--font-headline)';
       ctx.textAlign = 'center';
-      ctx.fillText(isFever ? "🔥 FEVER MODE (x5) 🔥" : "CLICK TO ROAST", canvas.width/2, 20);
+      ctx.fillText(isFever ? `🔥 ${t('fever_mode')} (x5) 🔥` : t('click_to_roast'), canvas.width/2, 20);
       ctx.textAlign = 'start';
       
       animationFrameId = requestAnimationFrame(render);
@@ -148,7 +152,7 @@ const GameCanvas = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [state]);
+  }, [state, t]);
 
   return (
     <div className="relative flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm">

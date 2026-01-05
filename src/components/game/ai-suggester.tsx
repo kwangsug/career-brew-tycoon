@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { getAINameSuggestions } from '@/app/actions';
 import { GameContext } from './game-provider';
 import type { Item } from '@/types/game';
+import { useI18n } from '@/locales/client';
 
 interface AISuggesterProps {
   item: Item;
@@ -16,6 +17,7 @@ export default function AISuggester({ item, onSelectName }: AISuggesterProps) {
   const { state } = useContext(GameContext);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useI18n();
 
   const handleSuggestNames = async () => {
     if (!state) return;
@@ -29,7 +31,7 @@ export default function AISuggester({ item, onSelectName }: AISuggesterProps) {
 
   return (
     <div className="mt-4 p-4 bg-secondary/50 rounded-lg">
-      <h4 className="text-sm font-bold text-center mb-3 text-secondary-foreground">AI Name Suggestions</h4>
+      <h4 className="text-sm font-bold text-center mb-3 text-secondary-foreground">{t('ai_suggestion_title')}</h4>
       <Button
         onClick={handleSuggestNames}
         disabled={isLoading}
@@ -41,7 +43,7 @@ export default function AISuggester({ item, onSelectName }: AISuggesterProps) {
         ) : (
           <Wand2 className="mr-2 h-4 w-4" />
         )}
-        Suggest Creative Names
+        {t('suggest_names')}
       </Button>
       {suggestions.length > 0 && (
         <div className="mt-3 grid grid-cols-1 gap-2">

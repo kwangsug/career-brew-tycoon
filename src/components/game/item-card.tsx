@@ -11,6 +11,7 @@ import { GameContext } from './game-provider';
 import type { Item as ItemType } from '@/types/game';
 import { formatNum } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useI18n } from '@/locales/client';
 
 interface ItemCardProps {
   item: ItemType;
@@ -19,6 +20,7 @@ interface ItemCardProps {
 
 export default function ItemCard({ item, index }: ItemCardProps) {
   const { state, dispatch } = useContext(GameContext);
+  const { t } = useI18n();
 
   if (!state || !dispatch) return null;
 
@@ -51,24 +53,24 @@ export default function ItemCard({ item, index }: ItemCardProps) {
         <div className="relative w-12 h-12 flex-shrink-0">
           <Image
             src={iconSrc}
-            alt={item.name}
+            alt={t(item.id)}
             width={48}
             height={48}
             data-ai-hint={iconHint}
             className={`rounded-md object-contain transition-all ${isUnlocked ? '' : 'grayscale'}`}
           />
           {isUnlocked && item.owned > 0 && (
-            <Badge variant="destructive" className="absolute -bottom-1 -right-2 text-xs h-5 px-1.5">{`Lv.${item.owned}`}</Badge>
+            <Badge variant="destructive" className="absolute -bottom-1 -right-2 text-xs h-5 px-1.5">{`${t('lv')}.${item.owned}`}</Badge>
           )}
         </div>
         <div className="flex flex-col gap-1 text-left flex-1 min-w-0">
           {isUnlocked ? (
             <>
-              <p className="font-bold font-headline text-base truncate" title={item.customName || item.name}>
-                {item.customName || item.name}
+              <p className="font-bold font-headline text-base truncate" title={item.customName || t(item.id)}>
+                {item.customName || t(item.id)}
               </p>
               <p className="text-xs font-bold text-green-600 dark:text-green-400">
-                {item.type === 'click' ? 'Click' : 'Sec'}: +{formatNum(item.val)}
+                {item.type === 'click' ? t('click_short') : t('sec_short')}: +{formatNum(item.val)}
               </p>
             </>
           ) : (

@@ -10,9 +10,11 @@ import RankingModal from '@/components/game/ranking-modal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { I18nProvider, useI18n } from '@/locales/client';
 
 const GameUI = () => {
   const { state, dispatch } = useContext(GameContext);
+  const { t } = useI18n();
 
   if (!state) return null; // Or a loading spinner
 
@@ -61,9 +63,9 @@ const GameUI = () => {
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleNameSubmit}>
             <DialogHeader>
-              <DialogTitle className='font-headline'>Welcome to Career Brew!</DialogTitle>
+              <DialogTitle className='font-headline'>{t('welcome_title')}</DialogTitle>
               <DialogDescription>
-                Enter a nickname to register on the leaderboard.
+                {t('welcome_description')}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
@@ -76,7 +78,7 @@ const GameUI = () => {
               />
             </div>
             <DialogFooter>
-              <Button type="submit">Start Roasting</Button>
+              <Button type="submit">{t('start_roasting')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -88,8 +90,10 @@ const GameUI = () => {
 
 export default function Home() {
   return (
-    <GameProvider>
-      <GameUI />
-    </GameProvider>
+    <I18nProvider>
+      <GameProvider>
+        <GameUI />
+      </GameProvider>
+    </I18nProvider>
   );
 }

@@ -75,4 +75,4 @@ export type GameAction =
   | { type: 'TOGGLE_ITEM_POPUP', payload: { isOpen: boolean, itemIndex?: number } }
   | { type: 'TOGGLE_RANKING_MODAL', payload: boolean }
   | { type: 'UPDATE_MY_RANK', payload: number | null }
-  | { type: 'UPDATE_MESSAGE' };
+  | { type: 'UPDATE_MESSAGE', payload: { t: (key: string, options?: any) => string } };

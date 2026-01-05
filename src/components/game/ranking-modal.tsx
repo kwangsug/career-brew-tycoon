@@ -9,10 +9,11 @@ import { fetchRealRanking, type RankEntry } from '@/lib/firebase';
 import { formatNum } from '@/lib/utils';
 import { Skeleton } from '../ui/skeleton';
 import { Crown, Loader2 } from 'lucide-react';
+import { useI18n } from '@/locales/client';
 
 type TabName = 'national' | 'regional' | 'friend';
 
-const RankItem = ({ rank, entry, isMe }: { rank: number, entry: RankEntry, isMe: boolean }) => {
+const RankItem = ({ rank, entry, isMe, youText }: { rank: number, entry: RankEntry, isMe: boolean, youText: string }) => {
   const rankBadge = () => {
     if (rank === 1) return <span className="text-yellow-400"><Crown className="w-5 h-5" /></span>;
     if (rank === 2) return <span className="text-gray-400"><Crown className="w-5 h-5" /></span>;
@@ -20,11 +21,13 @@ const RankItem = ({ rank, entry, isMe }: { rank: number, entry: RankEntry, isMe:
     return <span className="w-5 text-center">{rank}</span>
   };
 
+  const displayName = isMe ? `${entry.name} ${youText}` : entry.name;
+
   return (
     <div className={`flex items-center justify-between p-2 rounded-lg ${isMe ? 'bg-primary/10' : ''}`}>
       <div className="flex items-center gap-3">
         <div className="font-bold text-lg w-5 text-center">{rankBadge()}</div>
-        <div className={`font-bold ${isMe ? 'text-primary' : ''}`}>{entry.name}</div>
+        <div className={`font-bold ${isMe ? 'text-primary' : ''}`}>{displayName}</div>
       </div>
       <div className="font-mono font-bold">{formatNum(entry.score)} BPS</div>
     </div>
@@ -37,6 +40,7 @@ export default function RankingModal() {
   const [nationalRanking, setNationalRanking] = useState<RankEntry[]>([]);
   const [virtualRankings, setVirtualRankings] = useState<{ regional: RankEntry[], friend: RankEntry[] }>({ regional: [], friend: [] });
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (state?.isRankingModalOpen && activeTab === 'national') {
@@ -45,6 +49,7 @@ export default function RankingModal() {
     if (state?.isRankingModalOpen && (activeTab === 'regional' || activeTab === 'friend')) {
       generateVirtualRanking(activeTab);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.isRankingModalOpen, activeTab]);
 
   const loadNationalRanking = async () => {
@@ -57,8 +62,8 @@ export default function RankingModal() {
   const generateVirtualRanking = (type: 'regional' | 'friend') => {
     if (!state) return;
     const npcNames = {
-        regional: ["Gangnam Landlord", "Pangyo Coder", "Yeoksam Artisan", "Hongdae Hipster", "Local Starbucks", "Next-door Ediya", "Upstairs Neighbor", "Town Unemployed", "Convenience King", "Han River Ramen Lover"],
-        friend: ["Kim Coding", "Lee Java", "Park Python", "Choi Server", "Jung Client", "Han Designer", "Oh Planner", "Yoo CEO", "Jo Intern", "Hwang Manager"]
+        regional: t('regional_npcs', { returnObjects: true }) as string[],
+        friend: t('friend_npcs', { returnObjects: true }) as string[]
     };
     const currentScore = state.baseBps * (state.isFever ? 5 : 1);
     let rankData: RankEntry[] = [];
@@ -68,7 +73,7 @@ export default function RankingModal() {
         if (score < 10) score = Math.random() * 100;
         rankData.push({ id: `npc-${i}`, name: name, score: score });
     });
-    rankData.push({ id: state.playerId, name: `${state.playerName} (You)`, score: currentScore });
+    rankData.push({ id: state.playerId, name: state.playerName, score: currentScore });
     rankData.sort((a, b) => b.score - a.score);
     setVirtualRankings(prev => ({ ...prev, [type]: rankData }));
   };
@@ -92,11 +97,11 @@ export default function RankingModal() {
     }
 
     if (data.length === 0) {
-      return <div className="text-center p-8 text-muted-foreground">No ranking data. Press "Save" to join!</div>;
+      return <div className="text-center p-8 text-muted-foreground">{t('no_ranking_data')}</div>;
     }
 
     return data.map((entry, index) => (
-      <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} />
+      <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} />
     ));
   };
 
@@ -105,13 +110,13 @@ export default function RankingModal() {
     <Dialog open={state?.isRankingModalOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-md flex flex-col max-h-[80vh]">
         <DialogHeader>
-          <DialogTitle className="font-headline text-2xl text-center">🏆 Real-time Rankings</DialogTitle>
+          <DialogTitle className="font-headline text-2xl text-center">🏆 {t('realtime_rankings')}</DialogTitle>
         </DialogHeader>
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabName)} className="flex flex-col flex-grow min-h-0">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="national">🌏 Global</TabsTrigger>
-            <TabsTrigger value="regional">🏘️ Regional</TabsTrigger>
-            <TabsTrigger value="friend">👥 Friends</TabsTrigger>
+            <TabsTrigger value="national">🌏 {t('global_tab')}</TabsTrigger>
+            <TabsTrigger value="regional">🏘️ {t('regional_tab')}</TabsTrigger>
+            <TabsTrigger value="friend">👥 {t('friends_tab')}</TabsTrigger>
           </TabsList>
           <div className="flex-grow overflow-y-auto mt-2 pr-2">
             <TabsContent value="national" className="space-y-1">
@@ -126,7 +131,7 @@ export default function RankingModal() {
           </div>
         </Tabs>
         <DialogFooter>
-          <Button onClick={handleClose} className="w-full">Close</Button>
+          <Button onClick={handleClose} className="w-full">{t('close')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

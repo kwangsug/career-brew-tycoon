@@ -9,9 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { formatNum } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import AISuggester from './ai-suggester';
+import { useI18n } from '@/locales/client';
 
 export default function ItemPopup() {
   const { state, dispatch } = useContext(GameContext);
+  const { t } = useI18n();
 
   const isOpen = state?.isItemPopupOpen ?? false;
   const itemIndex = state?.currentItemIndex;
@@ -51,26 +53,26 @@ export default function ItemPopup() {
             {placeholder && (
               <Image
                 src={placeholder.imageUrl}
-                alt={item.name}
+                alt={t(item.id)}
                 width={80}
                 height={80}
                 data-ai-hint={placeholder.imageHint}
                 className="rounded-lg object-contain"
               />
             )}
-            <Badge variant="destructive" className="absolute -bottom-2 -right-2 text-sm">{`Lv.${item.owned}`}</Badge>
+            <Badge variant="destructive" className="absolute -bottom-2 -right-2 text-sm">{`${t('lv')}.${item.owned}`}</Badge>
           </div>
-          <DialogTitle className="font-headline text-2xl">{item.customName || item.name}</DialogTitle>
-          <DialogDescription className="text-center">{item.description}</DialogDescription>
+          <DialogTitle className="font-headline text-2xl">{item.customName || t(item.id)}</DialogTitle>
+          <DialogDescription className="text-center">{t(`${item.id}_desc`)}</DialogDescription>
         </DialogHeader>
 
         <div className="my-4 p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="font-bold text-muted-foreground">Effect (per level)</span>
+            <span className="font-bold text-muted-foreground">{t('effect_per_level')}</span>
             <span className="font-black text-green-600 dark:text-green-400">+{formatNum(item.val)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="font-bold text-muted-foreground">Total Contribution</span>
+            <span className="font-bold text-muted-foreground">{t('total_contribution')}</span>
             <span className="font-black text-green-600 dark:text-green-400">+{formatNum(totalEffect)}</span>
           </div>
         </div>
@@ -82,7 +84,7 @@ export default function ItemPopup() {
         >
           <span>🫘</span>
           <span className="ml-2">{formatNum(price)}</span>
-          <span className="ml-2">Purchase</span>
+          <span className="ml-2">{t('purchase')}</span>
         </Button>
         
         <AISuggester item={item} onSelectName={handleSelectName} />
