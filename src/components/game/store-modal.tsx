@@ -26,13 +26,15 @@ export default function StoreModal() {
           <DialogTitle className="font-headline text-2xl text-center">🛒 {t('store_title')}</DialogTitle>
           <DialogDescription className="text-center">{t('store_subtitle')}</DialogDescription>
         </DialogHeader>
-        <ScrollArea className="flex-grow -mr-4 pr-4">
-          <div className="space-y-3">
-            {state?.items.map((item, index) => (
-              <ItemCard key={item.id} item={item} index={index} />
-            ))}
-          </div>
-        </ScrollArea>
+        <div className="flex-grow overflow-hidden">
+          <ScrollArea className="h-full pr-4 -mr-4">
+            <div className="space-y-3">
+              {state?.items.map((item, index) => (
+                <ItemCard key={item.id} item={item} index={index} />
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
