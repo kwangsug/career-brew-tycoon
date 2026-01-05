@@ -170,7 +170,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const newParticles = [...state.particles];
       for(let j=0; j<6; j++) { newParticles.push({x: x, y: y, vx:(Math.random()-0.5)*15, vy:(Math.random()-0.5)*15-5, life:1}); }
 
-      const newFloatingTexts = [...state.floatingTexts, { x, y, val: clickGain, life: 1.0, rotation: (Math.random() - 0.5) * 30 }];
+      const newFloatingTexts = [...state.floatingTexts, { x, y, val: clickGain, life: 1.0, rotation: (Math.random() - 0.5) * 60 }];
 
       return {
         ...state,
