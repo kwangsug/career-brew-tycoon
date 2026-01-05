@@ -17,9 +17,15 @@ export default function Footer() {
         <Button
           variant="outline"
           size="lg"
-          className={`flex-1 ${state.canAffordNewItem ? 'animate-pulse-bg' : ''}`}
+          className="flex-1 relative"
           onClick={() => dispatch({ type: "TOGGLE_STORE_MODAL", payload: true })}
         >
+          {state.canAffordNewItem && (
+            <span className="absolute -top-1 -right-1 flex h-5 w-5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs text-white font-black">N</span>
+            </span>
+          )}
           <ShoppingCart className="mr-2 h-5 w-5" /> {t('store_title')}
         </Button>
          <Button

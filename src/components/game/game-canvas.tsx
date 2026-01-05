@@ -66,22 +66,25 @@ const GameCanvas = () => {
       // Main Roaster Image
       ctx.save();
       const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2 + 10;
+      const centerY = canvas.height / 2;
       ctx.translate(centerX, centerY);
-      if (isFever) {
-        const shake = Math.sin(Date.now() / 50) * 5;
-        ctx.rotate(shake * Math.PI / 180);
-        ctx.scale(1.1, 1.1);
-      }
       ctx.scale(clickScaleRef.current, clickScaleRef.current);
       
       const roasterImg = roasterImgRef.current;
       if (roasterImg && roasterImg.complete && roasterImg.naturalWidth > 0) {
-          const size = 180;
-          ctx.shadowColor = "rgba(0,0,0, 0.3)";
-          ctx.shadowBlur = 20;
-          ctx.shadowOffsetY = 15;
-          ctx.drawImage(roasterImg, -size / 2, -size / 2, size, size);
+          const canvasAspect = canvas.width / canvas.height;
+          const imgAspect = roasterImg.naturalWidth / roasterImg.naturalHeight;
+          let drawWidth, drawHeight;
+
+          if (canvasAspect > imgAspect) {
+            drawWidth = canvas.width;
+            drawHeight = canvas.width / imgAspect;
+          } else {
+            drawHeight = canvas.height;
+            drawWidth = canvas.height * imgAspect;
+          }
+          
+          ctx.drawImage(roasterImg, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
       } else {
         // Fallback drawing
         ctx.fillStyle = isFever ? '#ff5722' : '#6d4c41';
@@ -165,14 +168,14 @@ const GameCanvas = () => {
   }, [state, t, i18n.language]);
 
   return (
-    <div className="relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm">
+    <div className="relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm overflow-hidden">
       <Image
         ref={roasterImgRef}
         src="https://i.postimg.cc/CKrNbX4G/fd9845a6_1ac8_4dbb_9419_1fee5445e2c6.jpg"
         data-ai-hint="coffee roaster illustration"
         alt="Coffee Roaster"
-        width={200}
-        height={200}
+        width={400}
+        height={400}
         className="hidden"
       />
       <canvas
@@ -180,7 +183,7 @@ const GameCanvas = () => {
         id="game"
         width="400"
         height="250"
-        className="w-full h-full cursor-pointer touch-none rounded-2xl"
+        className="w-full h-full cursor-pointer touch-none"
         onMouseDown={handleInput}
         onTouchStart={handleInput}
       />
