@@ -45,7 +45,7 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     myRank: null,
     message: "Let's get roasting!",
     lastClickTime: Date.now(),
-    showClickHint: true,
+    showClickHint: false,
   };
 };
 
@@ -198,12 +198,17 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const newItems = [...state.items];
       newItems[itemIndex] = { ...item, owned: item.owned + 1 };
 
+      const isFromStore = state.isStoreModalOpen;
+      const isFromPopup = state.isItemPopupOpen;
+
       return {
         ...state,
         beans: state.beans - price,
         items: newItems,
         baseClick: item.type === 'click' ? state.baseClick + item.val : state.baseClick,
         baseBps: item.type === 'bps' ? state.baseBps + item.val : state.baseBps,
+        isStoreModalOpen: isFromStore ? false : state.isStoreModalOpen,
+        isItemPopupOpen: isFromPopup ? false : state.isItemPopupOpen,
       };
     }
     case 'UPDATE_ITEM_NAME': {
