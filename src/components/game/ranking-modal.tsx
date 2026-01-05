@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchRealRanking, type RankEntry } from '@/lib/firebase';
 import { formatNum } from '@/lib/utils';
 import { Skeleton } from '../ui/skeleton';
-import { Crown, Loader2 } from 'lucide-react';
+import { Crown } from 'lucide-react';
 import { useI18n } from '@/locales/client';
 
 type TabName = 'national' | 'regional' | 'friend';
@@ -23,7 +23,7 @@ const RankItem = ({ rank, entry, isMe, youText, lang, perSecondText }: { rank: n
 
   const displayName = isMe ? `${entry.name} ${youText}` : entry.name;
   const scoreDisplay = lang === 'ko'
-    ? `${perSecondText} ${formatNum(entry.score, lang)}`
+    ? `${perSecondText}${formatNum(entry.score, lang)}`
     : `${formatNum(entry.score, lang)} BPS`;
 
   return (
@@ -83,7 +83,9 @@ export default function RankingModal() {
 
 
   const handleClose = () => {
-    dispatch({ type: 'TOGGLE_RANKING_MODAL', payload: false });
+    if (dispatch) {
+      dispatch({ type: 'TOGGLE_RANKING_MODAL', payload: false });
+    }
   };
   
   const renderRankingList = (data: RankEntry[]) => {

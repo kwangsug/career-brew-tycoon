@@ -12,26 +12,28 @@ export default function StoreModal() {
   const { t } = useI18n();
 
   const handleClose = () => {
-    dispatch({ type: 'TOGGLE_STORE_MODAL', payload: false });
+    if (dispatch) {
+      dispatch({ type: 'TOGGLE_STORE_MODAL', payload: false });
+    }
   };
   
   if (!state) return null;
 
   return (
     <Dialog open={state.isStoreModalOpen} onOpenChange={(open) => !open && handleClose()}>
-        <DialogContent className="sm:max-w-md flex flex-col max-h-[80vh]">
-            <DialogHeader>
-                <DialogTitle className="font-headline text-2xl text-center">🛒 {t('store_title')}</DialogTitle>
-                <DialogDescription className="text-center">{t('store_subtitle')}</DialogDescription>
-            </DialogHeader>
-            <ScrollArea className="flex-grow -mr-4 pr-4">
-                <div className="space-y-3">
-                {state?.items.map((item, index) => (
-                    <ItemCard key={item.name} item={item} index={index} />
-                ))}
-                </div>
-            </ScrollArea>
-        </DialogContent>
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[80vh]">
+        <DialogHeader>
+          <DialogTitle className="font-headline text-2xl text-center">🛒 {t('store_title')}</DialogTitle>
+          <DialogDescription className="text-center">{t('store_subtitle')}</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="flex-grow -mr-4 pr-4">
+          <div className="space-y-3">
+            {state?.items.map((item, index) => (
+              <ItemCard key={item.id} item={item} index={index} />
+            ))}
+          </div>
+        </ScrollArea>
+      </DialogContent>
     </Dialog>
   );
 }
