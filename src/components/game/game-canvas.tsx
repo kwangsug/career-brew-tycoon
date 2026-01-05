@@ -121,12 +121,15 @@ const GameCanvas = () => {
       // Floating Texts
       ctx.textAlign = 'center';
       floatingTextsRef.current.forEach((ft) => {
-          ctx.save(); ctx.globalAlpha = ft.life;
+          ctx.save();
+          ctx.globalAlpha = ft.life;
+          ctx.translate(ft.x, ft.y);
+          ctx.rotate(ft.rotation * Math.PI / 180);
           ctx.font = `900 ${isFever ? '28px' : '22px'} var(--font-body)`;
           ctx.fillStyle = ft.color || (isFever ? '#d50000' : '#fff');
           ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4;
           const text = ft.val === 'LUCKY!' ? t('lucky') : `+${typeof ft.val === 'number' ? formatNum(ft.val) : ft.val} ${typeof ft.val === 'number' ? '🫘' : ''}`;
-          ctx.fillText(text, ft.x, ft.y); 
+          ctx.fillText(text, 0, 0);
           ctx.restore();
       });
       ctx.textAlign = 'start';
@@ -165,8 +168,8 @@ const GameCanvas = () => {
     <div className="relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm">
       <Image
         ref={roasterImgRef}
-        src="https://picsum.photos/seed/roaster/200/200"
-        data-ai-hint="coffee roaster"
+        src="https://images.unsplash.com/photo-1507915135761-41a0a27a3c45?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjYWZlJTIwYXJ0fGVufDB8fHx8MTc2NzUyNjA2OHww&ixlib=rb-4.1.0&q=80&w=1080"
+        data-ai-hint="coffee roaster illustration"
         alt="Coffee Roaster"
         width={200}
         height={200}

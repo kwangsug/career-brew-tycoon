@@ -24,6 +24,7 @@ export interface FloatingText {
   val: number | string;
   life: number;
   color?: string;
+  rotation: number;
 }
 
 export interface GoldenBean {

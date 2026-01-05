@@ -152,7 +152,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
           const gb = state.goldenBean;
           const dist = Math.sqrt((x - gb.x)**2 + (y - gb.y)**2);
           if (dist < 60) {
-              const newFloatingTexts = [...state.floatingTexts, { x, y, val: "LUCKY!", life: 2.0, color: "#ffd700" }];
+              const newFloatingTexts = [...state.floatingTexts, { x, y, val: "LUCKY!", life: 2.0, color: "#ffd700", rotation: (Math.random() - 0.5) * 30 }];
               return { ...state, goldenBean: { ...gb, active: false }, isFever: true, feverGauge: 100, floatingTexts: newFloatingTexts, nextGoldenTime: Date.now() + GOLDEN_INTERVAL };
           }
       }
@@ -170,7 +170,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const newParticles = [...state.particles];
       for(let j=0; j<6; j++) { newParticles.push({x: x, y: y, vx:(Math.random()-0.5)*15, vy:(Math.random()-0.5)*15-5, life:1}); }
 
-      const newFloatingTexts = [...state.floatingTexts, { x, y, val: clickGain, life: 1.0 }];
+      const newFloatingTexts = [...state.floatingTexts, { x, y, val: clickGain, life: 1.0, rotation: (Math.random() - 0.5) * 30 }];
 
       return {
         ...state,
