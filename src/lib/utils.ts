@@ -22,18 +22,37 @@ export function formatNum(num: number, lang: string = 'en'): string {
     if (lang.toLowerCase().startsWith('ko')) {
         const units = ["", "만", "억", "조", "경", "해", "자", "양", "구", "간", "정", "재", "극"];
         if (num < 10000) return num.toLocaleString('ko-KR');
-        
-        let unitIndex = 0;
+
         let tempNum = num;
-        while(tempNum >= 10000 && unitIndex < units.length -1) {
+        let unitIndex = 0;
+        while (tempNum >= 10000 && unitIndex < units.length - 1) {
             tempNum /= 10000;
             unitIndex++;
         }
         
-        const rx = /\.00$|\.0$|(\.\d*?[1-9])0+$/;
-        const formattedNum = tempNum.toFixed(2).replace(rx, "$1");
+        if (tempNum >= 10000) { // Max unit reached
+             const mainPart = Math.floor(tempNum);
+             return `${mainPart.toLocaleString('ko-KR')}${units[unitIndex]}`;
+        }
         
-        return `${formattedNum}${units[unitIndex]}`;
+        const mainPart = Math.floor(tempNum);
+        const remainder = Math.floor((tempNum - mainPart) * 10000);
+
+        if (remainder === 0) {
+            return `${mainPart}${units[unitIndex]}`;
+        } else {
+             if (unitIndex > 0) {
+                const remainderUnit = units[unitIndex - 1];
+                if (remainderUnit === '만' || remainderUnit === '억' || remainderUnit === '조' || remainderUnit === '경' || remainderUnit === '해') {
+                     return `${mainPart}${units[unitIndex]} ${remainder.toLocaleString('ko-KR')}${remainderUnit}`;
+                }
+                 return `${mainPart}${units[unitIndex]} ${remainder.toLocaleString('ko-KR')}`;
+            } else {
+                 const rx = /\.00$|\.0$|(\.\d*?[1-9])0+$/;
+                 const formattedNum = tempNum.toFixed(2).replace(rx, "$1");
+                 return `${formattedNum}${units[unitIndex]}`;
+            }
+        }
     }
 
     const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
