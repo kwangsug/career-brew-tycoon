@@ -39,6 +39,7 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     floatingTexts: [],
     isFirstLoad: false,
     isRankingModalOpen: false,
+    isStoreModalOpen: false,
     isItemPopupOpen: false,
     currentItemIndex: null,
     myRank: null,
@@ -222,6 +223,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     }
     case 'TOGGLE_RANKING_MODAL':
       return { ...state, isRankingModalOpen: action.payload };
+    case 'TOGGLE_STORE_MODAL':
+      return { ...state, isStoreModalOpen: action.payload };
     case 'UPDATE_MY_RANK':
       return { ...state, myRank: action.payload };
     case 'UPDATE_MESSAGE': {

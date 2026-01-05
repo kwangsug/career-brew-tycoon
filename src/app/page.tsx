@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { GameProvider, GameContext } from '@/components/game/game-provider';
 import StatsPanel from '@/components/game/stats-panel';
 import GameCanvas from '@/components/game/game-canvas';
-import Store from '@/components/game/store';
+import StoreModal from '@/components/game/store-modal';
 import Footer from '@/components/game/footer';
 import ItemPopup from '@/components/game/item-popup';
 import RankingModal from '@/components/game/ranking-modal';
@@ -52,10 +52,10 @@ const GameUI = () => {
         
         <StatsPanel />
         <GameCanvas />
-        <Store />
         <Footer />
       </div>
 
+      <StoreModal />
       <ItemPopup />
       <RankingModal />
 

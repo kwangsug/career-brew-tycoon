@@ -13,7 +13,7 @@ const GameCanvas = () => {
   const { t } = useI18n();
   const particlesRef = useRef<Particle[]>([]);
   const floatingTextsRef = useRef<FloatingText[]>([]);
-  const beanImgRef = useRef<HTMLImageElement>(null);
+  const roasterImgRef = useRef<HTMLImageElement>(null);
   const clickScaleRef = useRef(1.0);
   
   useEffect(() => {
@@ -63,7 +63,7 @@ const GameCanvas = () => {
         if (clickScaleRef.current > 1.0) clickScaleRef.current = 1.0;
       }
 
-      // Main Bean
+      // Main Roaster Image
       ctx.save();
       const centerX = canvas.width / 2;
       const centerY = canvas.height / 2 + 10;
@@ -75,24 +75,24 @@ const GameCanvas = () => {
       }
       ctx.scale(clickScaleRef.current, clickScaleRef.current);
       
-      const beanImg = beanImgRef.current;
-      if (beanImg && beanImg.complete && beanImg.naturalWidth > 0) {
-          const size = 110;
-          ctx.shadowColor = "rgba(62, 39, 35, 0.4)";
-          ctx.shadowBlur = 15;
-          ctx.shadowOffsetY = 10;
-          ctx.drawImage(beanImg, -size / 2, -size / 2, size, size);
+      const roasterImg = roasterImgRef.current;
+      if (roasterImg && roasterImg.complete && roasterImg.naturalWidth > 0) {
+          const size = 180;
+          ctx.shadowColor = "rgba(0,0,0, 0.3)";
+          ctx.shadowBlur = 20;
+          ctx.shadowOffsetY = 15;
+          ctx.drawImage(roasterImg, -size / 2, -size / 2, size, size);
       } else {
         // Fallback drawing
         ctx.fillStyle = isFever ? '#ff5722' : '#6d4c41';
         ctx.beginPath();
-        ctx.arc(0, 0, 40, 0, Math.PI * 2);
+        ctx.arc(0, 0, 60, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = "#fff";
-        ctx.font = "30px Arial";
+        ctx.font = "50px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("🫘", 0, 0);
+        ctx.fillText("🔥", 0, 0);
       }
       ctx.restore();
 
@@ -114,7 +114,7 @@ const GameCanvas = () => {
 
       // Particles
       particlesRef.current.forEach((p) => {
-          ctx.fillStyle = `rgba(62, 39, 35, ${p.life})`;
+          ctx.fillStyle = `rgba(188, 114, 45, ${p.life})`;
           ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill();
       });
 
@@ -122,7 +122,7 @@ const GameCanvas = () => {
       ctx.textAlign = 'center';
       floatingTextsRef.current.forEach((ft) => {
           ctx.save(); ctx.globalAlpha = ft.life;
-          ctx.font = `900 ${isFever ? '24px' : '18px'} var(--font-body)`;
+          ctx.font = `900 ${isFever ? '28px' : '22px'} var(--font-body)`;
           ctx.fillStyle = ft.color || (isFever ? '#d50000' : '#fff');
           ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4;
           const text = ft.val === 'LUCKY!' ? t('lucky') : `+${typeof ft.val === 'number' ? formatNum(ft.val) : ft.val} ${typeof ft.val === 'number' ? '🫘' : ''}`;
@@ -133,9 +133,9 @@ const GameCanvas = () => {
       
       // Fever Bar
       ctx.fillStyle = 'hsl(var(--muted))';
-      ctx.fillRect(50, 155, 300, 10);
+      ctx.fillRect(50, canvas.height - 30, 300, 10);
       ctx.fillStyle = isFever ? '#d50000' : 'hsl(var(--primary))';
-      ctx.fillRect(50, 155, 300 * (feverGauge / 100), 10);
+      ctx.fillRect(50, canvas.height - 30, 300 * (feverGauge / 100), 10);
       
       // Click Text
       ctx.fillStyle = 'hsl(var(--foreground) / 0.8)';
@@ -144,7 +144,10 @@ const GameCanvas = () => {
       if (isFever) {
         ctx.fillText(`🔥 ${t('fever_mode')} (x5) 🔥`, canvas.width/2, 20);
       } else if (showClickHint) {
+        const hintAlpha = 0.5 + Math.sin(Date.now() / 300) * 0.5;
+        ctx.globalAlpha = hintAlpha;
         ctx.fillText(t('click_to_roast'), canvas.width/2, 20);
+        ctx.globalAlpha = 1.0;
       }
       ctx.textAlign = 'start';
       
@@ -159,14 +162,14 @@ const GameCanvas = () => {
   }, [state, t]);
 
   return (
-    <div className="relative flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm">
+    <div className="relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm">
       <Image
-        ref={beanImgRef}
-        src="https://picsum.photos/seed/bean/130/130"
-        data-ai-hint="coffee bean"
-        alt="Coffee Bean"
-        width={130}
-        height={130}
+        ref={roasterImgRef}
+        src="https://picsum.photos/seed/roaster/200/200"
+        data-ai-hint="coffee roaster"
+        alt="Coffee Roaster"
+        width={200}
+        height={200}
         className="hidden"
         unoptimized
       />
@@ -174,8 +177,8 @@ const GameCanvas = () => {
         ref={canvasRef}
         id="game"
         width="400"
-        height="180"
-        className="w-full cursor-pointer touch-none rounded-2xl"
+        height="250"
+        className="w-full h-full cursor-pointer touch-none rounded-2xl"
         onMouseDown={handleInput}
         onTouchStart={handleInput}
       />

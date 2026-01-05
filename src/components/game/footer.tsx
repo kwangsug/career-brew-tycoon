@@ -2,7 +2,7 @@
 import { useContext } from "react";
 import { GameContext } from "./game-provider";
 import { Button } from "@/components/ui/button";
-import { Save, Trash2, Trophy } from "lucide-react";
+import { Save, Trash2, Trophy, ShoppingCart } from "lucide-react";
 import { useI18n } from "@/locales/client";
 
 export default function Footer() {
@@ -13,13 +13,24 @@ export default function Footer() {
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center gap-2 mt-auto pt-2">
-      <Button
-        variant="link"
-        className="font-bold text-foreground/80"
-        onClick={() => dispatch({ type: "TOGGLE_RANKING_MODAL", payload: true })}
-      >
-        <Trophy className="mr-2 h-4 w-4" /> {t('view_rankings')}
-      </Button>
+      <div className="flex justify-center gap-4 w-full">
+        <Button
+          variant="outline"
+          size="lg"
+          className="flex-1"
+          onClick={() => dispatch({ type: "TOGGLE_STORE_MODAL", payload: true })}
+        >
+          <ShoppingCart className="mr-2 h-5 w-5" /> {t('store_title')}
+        </Button>
+         <Button
+          variant="outline"
+          size="lg"
+          className="flex-1"
+          onClick={() => dispatch({ type: "TOGGLE_RANKING_MODAL", payload: true })}
+        >
+          <Trophy className="mr-2 h-5 w-5" /> {t('realtime_rankings')}
+        </Button>
+      </div>
       <div className="flex justify-center gap-4 items-center">
         <Button
           size="sm"

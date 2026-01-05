@@ -56,6 +56,7 @@ export interface GameState {
   floatingTexts: FloatingText[];
   isFirstLoad: boolean;
   isRankingModalOpen: boolean;
+  isStoreModalOpen: boolean;
   isItemPopupOpen: boolean;
   currentItemIndex: number | null;
   myRank: number | null;
@@ -76,6 +77,7 @@ export type GameAction =
   | { type: 'RESET_GAME' }
   | { type: 'TOGGLE_ITEM_POPUP', payload: { isOpen: boolean, itemIndex?: number } }
   | { type: 'TOGGLE_RANKING_MODAL', payload: boolean }
+  | { type: 'TOGGLE_STORE_MODAL', payload: boolean }
   | { type: 'UPDATE_MY_RANK', payload: number | null }
   | { type: 'UPDATE_MESSAGE', payload: { t: (key: string, options?: any) => string } }
   | { type: 'TOGGLE_CLICK_HINT', payload: boolean };
