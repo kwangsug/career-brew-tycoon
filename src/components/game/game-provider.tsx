@@ -10,36 +10,39 @@ import { useI18n } from '@/locales/client';
 const SAVE_KEY = 'careerBrewSaveV1.0';
 const GOLDEN_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
-const adjectives = ["Sleepy", "Happy", "Hungry", "Caffeinated", "Passionate", "Rich", "Poor", "Legendary", "Beginner"];
-const nouns = ["Barista", "Developer", "CEO", "Intern", "Landlord", "Addict", "Roaster", "Taster"];
-const randomName = `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
 const generateUUID = () => 'user-' + Math.random().toString(36).substring(2, 9);
 
-const initialState: GameState = {
-  beans: 0,
-  baseBps: 0,
-  baseClick: 1,
-  manualTotal: 0,
-  items: initialItems,
-  feverGauge: 0,
-  isFever: false,
-  lastTime: Date.now(),
-  clickScale: 1.0,
-  playerName: "",
-  defaultPlayerName: randomName,
-  playerId: "",
-  levels: levelNames,
-  levelIndex: 0,
-  goldenBean: { active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0 },
-  nextGoldenTime: Date.now() + GOLDEN_INTERVAL,
-  particles: [],
-  floatingTexts: [],
-  isFirstLoad: false,
-  isRankingModalOpen: false,
-  isItemPopupOpen: false,
-  currentItemIndex: null,
-  myRank: null,
-  message: "Let's get roasting!",
+const getInitialState = (t: (key: string, options?: any) => string): GameState => {
+  const adjectives = t('random_adjectives', { returnObjects: true }) as string[];
+  const nouns = t('random_nouns', { returnObjects: true }) as string[];
+  const randomName = `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+  
+  return {
+    beans: 0,
+    baseBps: 0,
+    baseClick: 1,
+    manualTotal: 0,
+    items: initialItems,
+    feverGauge: 0,
+    isFever: false,
+    lastTime: Date.now(),
+    clickScale: 1.0,
+    playerName: "",
+    defaultPlayerName: randomName,
+    playerId: "",
+    levels: levelNames,
+    levelIndex: 0,
+    goldenBean: { active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0 },
+    nextGoldenTime: Date.now() + GOLDEN_INTERVAL,
+    particles: [],
+    floatingTexts: [],
+    isFirstLoad: false,
+    isRankingModalOpen: false,
+    isItemPopupOpen: false,
+    currentItemIndex: null,
+    myRank: null,
+    message: "Let's get roasting!",
+  };
 };
 
 const gameReducer = (state: GameState, action: GameAction): GameState => {
@@ -69,7 +72,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     }
     case 'NEW_GAME': {
       return {
-        ...state,
+        ...action.payload.initialState,
         isFirstLoad: true,
         playerId: generateUUID(),
         nextGoldenTime: Date.now() + GOLDEN_INTERVAL,
@@ -242,9 +245,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 export const GameContext = createContext<{ state: GameState; dispatch: React.Dispatch<GameAction> } | undefined>(undefined);
 
 export const GameProvider = ({ children }: { children: ReactNode }) => {
-  const [state, dispatch] = useReducer(gameReducer, initialState);
-  const { toast } = useToast();
   const { t } = useI18n();
+  const [state, dispatch] = useReducer(gameReducer, getInitialState(t));
+  const { toast } = useToast();
+  
   const gameLoopRef = useRef<number>();
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const rankTimeoutRef = useRef<NodeJS.Timeout>();
@@ -303,13 +307,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       if (savedData) {
         dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedData) });
       } else {
-        dispatch({ type: 'NEW_GAME' });
+        dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t) } });
       }
     } catch (error) {
       console.error("Failed to load game state:", error);
-      dispatch({ type: 'NEW_GAME' });
+      dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t) } });
     }
-  }, []);
+  }, [t]);
   
   // Periodic Save
   useEffect(() => {

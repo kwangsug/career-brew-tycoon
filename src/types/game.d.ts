@@ -64,7 +64,7 @@ export interface GameState {
 
 export type GameAction =
   | { type: 'LOAD_STATE'; payload: any }
-  | { type: 'NEW_GAME' }
+  | { type: 'NEW_GAME', payload: { initialState: GameState } }
   | { type: 'SET_PLAYER_NAME'; payload: string }
   | { type: 'GAME_TICK' }
   | { type: 'CANVAS_CLICK'; payload: { x: number; y: number } }
