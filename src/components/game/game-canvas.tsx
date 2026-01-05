@@ -10,7 +10,7 @@ import { useI18n } from '@/locales/client';
 const GameCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { state, dispatch } = useContext(GameContext);
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
   const particlesRef = useRef<Particle[]>([]);
   const floatingTextsRef = useRef<FloatingText[]>([]);
   const roasterImgRef = useRef<HTMLImageElement>(null);
@@ -128,7 +128,7 @@ const GameCanvas = () => {
           ctx.font = `900 ${isFever ? '28px' : '22px'} var(--font-body)`;
           ctx.fillStyle = ft.color || (isFever ? '#d50000' : '#fff');
           ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4;
-          const text = ft.val === 'LUCKY!' ? t('lucky') : `+${typeof ft.val === 'number' ? formatNum(ft.val) : ft.val} ${typeof ft.val === 'number' ? '🫘' : ''}`;
+          const text = ft.val === 'LUCKY!' ? t('lucky') : `+${typeof ft.val === 'number' ? formatNum(ft.val, i18n.language) : ft.val} ${typeof ft.val === 'number' ? '🫘' : ''}`;
           ctx.fillText(text, 0, 0);
           ctx.restore();
       });
@@ -162,7 +162,7 @@ const GameCanvas = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [state, t]);
+  }, [state, t, i18n.language]);
 
   return (
     <div className="relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm">

@@ -13,7 +13,7 @@ import { useI18n } from '@/locales/client';
 
 export default function ItemPopup() {
   const { state, dispatch } = useContext(GameContext);
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
 
   const isOpen = state?.isItemPopupOpen ?? false;
   const itemIndex = state?.currentItemIndex;
@@ -69,11 +69,11 @@ export default function ItemPopup() {
         <div className="my-4 p-4 bg-muted/50 rounded-lg space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="font-bold text-muted-foreground">{t('effect_per_level')}</span>
-            <span className="font-black text-green-600 dark:text-green-400">+{formatNum(item.val)}</span>
+            <span className="font-black text-green-600 dark:text-green-400">+{formatNum(item.val, i18n.language)}</span>
           </div>
           <div className="flex justify-between">
             <span className="font-bold text-muted-foreground">{t('total_contribution')}</span>
-            <span className="font-black text-green-600 dark:text-green-400">+{formatNum(totalEffect)}</span>
+            <span className="font-black text-green-600 dark:text-green-400">+{formatNum(totalEffect, i18n.language)}</span>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export default function ItemPopup() {
           className="w-full h-12 text-lg font-bold"
         >
           <span>🫘</span>
-          <span className="ml-2">{formatNum(price)}</span>
+          <span className="ml-2">{formatNum(price, i18n.language)}</span>
           <span className="ml-2">{t('purchase')}</span>
         </Button>
         

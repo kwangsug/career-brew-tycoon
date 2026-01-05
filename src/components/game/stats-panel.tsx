@@ -16,7 +16,7 @@ const StatRow = ({ label, value, badgeClass }: { label: string, value: string, b
 
 export default function StatsPanel() {
   const { state, dispatch } = useContext(GameContext);
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
 
   if (!state) return null;
 
@@ -49,7 +49,7 @@ export default function StatsPanel() {
             className="cursor-pointer border-2 border-amber-400 text-amber-600 font-bold hover:bg-amber-100/50"
             onClick={() => dispatch({ type: 'TOGGLE_RANKING_MODAL', payload: true })}
           >
-            🏆 {myRank ? `${t('global_rank')}: ${formatNum(myRank)}` : t('connecting')}
+            🏆 {myRank ? `${t('global_rank')}: ${formatNum(myRank, i18n.language)}` : t('connecting')}
           </Badge>
           <Badge variant={goldenBean.active || nextGoldenTime - Date.now() <= 0 ? "destructive" : "secondary"} className={`transition-all ${goldenBean.active ? 'animate-pulse' : ''}`}>
             {getTimeLeft()}
@@ -57,15 +57,15 @@ export default function StatsPanel() {
         </div>
         
         <div className="font-black text-4xl text-shadow">
-          {formatNum(beans)} 🫘
+          {formatNum(beans, i18n.language)} 🫘
         </div>
         <div className="text-xs font-bold opacity-70 -mt-2">
-          {t('manual_roast')}: {formatNum(manualTotal)}
+          {t('manual_roast')}: {formatNum(manualTotal, i18n.language)}
         </div>
 
         <div className="flex justify-center gap-4 pt-2 border-t border-dashed">
-          <StatRow label={`👆 ${t('per_click')}`} value={formatNum(currentClick)} badgeClass="bg-[#ffe0b2] text-[#e65100] border-[#ffb74d] hover:bg-[#ffe0b2]/80" />
-          <StatRow label={`⚙️ ${t('per_second')}`} value={formatNum(currentBps)} badgeClass="bg-[#e0f2f1] text-[#00695c] border-[#4db6ac] hover:bg-[#e0f2f1]/80" />
+          <StatRow label={`👆 ${t('per_click')}`} value={formatNum(currentClick, i18n.language)} badgeClass="bg-[#ffe0b2] text-[#e65100] border-[#ffb74d] hover:bg-[#ffe0b2]/80" />
+          <StatRow label={`⚙️ ${t('per_second')}`} value={formatNum(currentBps, i18n.language)} badgeClass="bg-[#e0f2f1] text-[#00695c] border-[#4db6ac] hover:bg-[#e0f2f1]/80" />
         </div>
         
         <div className={`text-sm font-bold h-5 transition-all duration-500 ${goldenBean.active ? 'gold-alert' : 'opacity-80'}`}>

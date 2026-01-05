@@ -20,7 +20,7 @@ interface ItemCardProps {
 
 export default function ItemCard({ item, index }: ItemCardProps) {
   const { state, dispatch } = useContext(GameContext);
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
 
   if (!state || !dispatch) return null;
 
@@ -69,7 +69,7 @@ export default function ItemCard({ item, index }: ItemCardProps) {
           </p>
           {(isOwned || canAfford) && (
             <p className="text-xs font-bold text-green-600 dark:text-green-400">
-              {item.type === 'click' ? t('click_short') : t('sec_short')}: +{formatNum(item.val)}
+              {item.type === 'click' ? t('click_short') : t('sec_short')}: +{formatNum(item.val, i18n.language)}
             </p>
           )}
         </div>
@@ -83,12 +83,12 @@ export default function ItemCard({ item, index }: ItemCardProps) {
         {canAfford ? (
           <>
             <span>🫘</span>
-            <span>{formatNum(price)}</span>
+            <span>{formatNum(price, i18n.language)}</span>
           </>
         ) : (
           <>
             <Lock className="mr-2 h-4 w-4" />
-            <span>{formatNum(price)}</span>
+            <span>{formatNum(price, i18n.language)}</span>
           </>
         )}
       </Button>

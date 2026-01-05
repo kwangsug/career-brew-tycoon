@@ -13,7 +13,7 @@ import { useI18n } from '@/locales/client';
 
 type TabName = 'national' | 'regional' | 'friend';
 
-const RankItem = ({ rank, entry, isMe, youText }: { rank: number, entry: RankEntry, isMe: boolean, youText: string }) => {
+const RankItem = ({ rank, entry, isMe, youText, lang }: { rank: number, entry: RankEntry, isMe: boolean, youText: string, lang: string }) => {
   const rankBadge = () => {
     if (rank === 1) return <span className="text-yellow-400"><Crown className="w-5 h-5" /></span>;
     if (rank === 2) return <span className="text-gray-400"><Crown className="w-5 h-5" /></span>;
@@ -29,7 +29,7 @@ const RankItem = ({ rank, entry, isMe, youText }: { rank: number, entry: RankEnt
         <div className="font-bold text-lg w-5 text-center">{rankBadge()}</div>
         <div className={`font-bold ${isMe ? 'text-primary' : ''}`}>{displayName}</div>
       </div>
-      <div className="font-mono font-bold">{formatNum(entry.score)} BPS</div>
+      <div className="font-mono font-bold">{formatNum(entry.score, lang)} BPS</div>
     </div>
   );
 };
@@ -40,7 +40,7 @@ export default function RankingModal() {
   const [nationalRanking, setNationalRanking] = useState<RankEntry[]>([]);
   const [virtualRankings, setVirtualRankings] = useState<{ regional: RankEntry[], friend: RankEntry[] }>({ regional: [], friend: [] });
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useI18n();
+  const { t, i18n } = useI18n();
 
   useEffect(() => {
     if (state?.isRankingModalOpen && activeTab === 'national') {
@@ -101,7 +101,7 @@ export default function RankingModal() {
     }
 
     return data.map((entry, index) => (
-      <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} />
+      <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} lang={i18n.language} />
     ));
   };
 

@@ -47,7 +47,7 @@ const GameUI = () => {
     <main className={`flex justify-center h-screen min-h-screen overflow-hidden transition-colors duration-1000 ${backgroundClass}`}>
       <div className="w-full max-w-md h-full flex flex-col p-4 gap-4 overflow-hidden relative">
         <h1 className="text-center text-2xl font-headline font-black whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-1000">
-          ☕ Career Brew: Zigzag
+          ☕ {t('game_title')}
         </h1>
         
         <StatsPanel />
