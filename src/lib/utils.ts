@@ -42,11 +42,12 @@ export function formatNum(num: number, lang: string = 'en'): string {
             return `${mainPart}${units[unitIndex]}`;
         } else {
              if (unitIndex > 0) {
-                const remainderUnit = units[unitIndex - 1];
-                if (remainderUnit === '만' || remainderUnit === '억' || remainderUnit === '조' || remainderUnit === '경' || remainderUnit === '해') {
-                     return `${mainPart}${units[unitIndex]} ${remainder.toLocaleString('ko-KR')}${remainderUnit}`;
-                }
-                 return `${mainPart}${units[unitIndex]} ${remainder.toLocaleString('ko-KR')}`;
+                const remainderFormatted = Math.floor(remainder / 100) * 100;
+                 if (remainderFormatted > 0) {
+                    return `${mainPart}${units[unitIndex]} ${remainderFormatted.toLocaleString('ko-KR')}${units[unitIndex-1]}`;
+                 } else {
+                    return `${mainPart}${units[unitIndex]}`;
+                 }
             } else {
                  const rx = /\.00$|\.0$|(\.\d*?[1-9])0+$/;
                  const formattedNum = tempNum.toFixed(2).replace(rx, "$1");

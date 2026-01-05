@@ -23,7 +23,7 @@ const RankItem = ({ rank, entry, isMe, youText, lang, perSecondText }: { rank: n
 
   const displayName = isMe ? `${entry.name} ${youText}` : entry.name;
   const scoreDisplay = lang === 'ko'
-    ? `${perSecondText}${formatNum(entry.score, lang)}`
+    ? `${perSecondText} ${formatNum(entry.score, lang)}`
     : `${formatNum(entry.score, lang)} BPS`;
 
   return (
