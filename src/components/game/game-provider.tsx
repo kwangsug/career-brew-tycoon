@@ -46,6 +46,7 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     message: "Let's get roasting!",
     lastClickTime: Date.now(),
     showClickHint: false,
+    canAffordNewItem: false,
   };
 };
 
@@ -139,6 +140,12 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
       const showHint = now - state.lastClickTime > CLICK_HINT_IDLE_TIME;
 
+      const canAfford = state.items.some(item => {
+        const costMultiplier = item.type === 'bps' ? 1.18 : 1.6;
+        const price = Math.floor(item.basePrice * Math.pow(costMultiplier, item.owned));
+        return state.beans >= price;
+      });
+
       return {
         ...state,
         beans: state.beans + beansGained,
@@ -150,6 +157,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         levelIndex,
         goldenBean: newGoldenBean,
         showClickHint: showHint,
+        canAffordNewItem: canAfford,
       };
     }
     case 'CANVAS_CLICK': {
@@ -391,5 +399,3 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     </GameContext.Provider>
   );
 };
-
-    

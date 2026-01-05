@@ -64,6 +64,7 @@ export interface GameState {
   message: string;
   lastClickTime: number;
   showClickHint: boolean;
+  canAffordNewItem: boolean;
 }
 
 export type GameAction =
@@ -83,5 +84,3 @@ export type GameAction =
   | { type: 'UPDATE_MY_RANK', payload: number | null }
   | { type: 'UPDATE_MESSAGE', payload: { t: (key: string, options?: any) => string } }
   | { type: 'TOGGLE_CLICK_HINT', payload: boolean };
-
-    

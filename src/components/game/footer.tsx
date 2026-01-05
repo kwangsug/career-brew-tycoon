@@ -6,10 +6,10 @@ import { Save, Trash2, Trophy, ShoppingCart } from "lucide-react";
 import { useI18n } from "@/locales/client";
 
 export default function Footer() {
-  const { dispatch } = useContext(GameContext);
+  const { state, dispatch } = useContext(GameContext);
   const { t } = useI18n();
 
-  if (!dispatch) return null;
+  if (!state || !dispatch) return null;
 
   return (
     <div className="flex-shrink-0 flex flex-col items-center gap-2 mt-auto pt-2">
@@ -17,7 +17,7 @@ export default function Footer() {
         <Button
           variant="outline"
           size="lg"
-          className="flex-1"
+          className={`flex-1 ${state.canAffordNewItem ? 'animate-pulse-bg' : ''}`}
           onClick={() => dispatch({ type: "TOGGLE_STORE_MODAL", payload: true })}
         >
           <ShoppingCart className="mr-2 h-5 w-5" /> {t('store_title')}
