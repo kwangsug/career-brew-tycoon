@@ -54,7 +54,7 @@ const GameCanvas = () => {
         return;
       }
       
-      const { feverGauge, isFever, goldenBean } = state;
+      const { feverGauge, isFever, goldenBean, showClickHint } = state;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -141,7 +141,11 @@ const GameCanvas = () => {
       ctx.fillStyle = 'hsl(var(--foreground) / 0.8)';
       ctx.font = '900 16px var(--font-headline)';
       ctx.textAlign = 'center';
-      ctx.fillText(isFever ? `🔥 ${t('fever_mode')} (x5) 🔥` : t('click_to_roast'), canvas.width/2, 20);
+      if (isFever) {
+        ctx.fillText(`🔥 ${t('fever_mode')} (x5) 🔥`, canvas.width/2, 20);
+      } else if (showClickHint) {
+        ctx.fillText(t('click_to_roast'), canvas.width/2, 20);
+      }
       ctx.textAlign = 'start';
       
       animationFrameId = requestAnimationFrame(render);

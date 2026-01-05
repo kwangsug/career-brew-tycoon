@@ -9,6 +9,7 @@ import { useI18n } from '@/locales/client';
 
 const SAVE_KEY = 'careerBrewSaveV1.0';
 const GOLDEN_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const CLICK_HINT_IDLE_TIME = 4000; // 4 seconds
 
 const generateUUID = () => 'user-' + Math.random().toString(36).substring(2, 9);
 
@@ -42,6 +43,8 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     currentItemIndex: null,
     myRank: null,
     message: "Let's get roasting!",
+    lastClickTime: Date.now(),
+    showClickHint: true,
   };
 };
 
@@ -68,6 +71,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         baseClick,
         baseBps,
         isFirstLoad: false,
+        lastClickTime: Date.now(),
       };
     }
     case 'NEW_GAME': {
@@ -76,6 +80,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         isFirstLoad: true,
         playerId: generateUUID(),
         nextGoldenTime: Date.now() + GOLDEN_INTERVAL,
+        lastClickTime: Date.now(),
       }
     }
     case 'SET_PLAYER_NAME': {
@@ -175,6 +180,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         isFever: newIsFever,
         particles: newParticles,
         floatingTexts: newFloatingTexts,
+        lastClickTime: Date.now(),
+        showClickHint: false,
       };
     }
     case 'BUY_ITEM': {
@@ -233,6 +240,9 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         const template = messageTemplates[Math.floor(Math.random() * messageTemplates.length)];
         return { ...state, message: template };
     }
+    case 'TOGGLE_CLICK_HINT': {
+      return { ...state, showClickHint: action.payload };
+    }
     case 'SAVE_GAME': // This is just for triggering the effect
       return state;
     case 'RESET_GAME': // This is just for triggering the effect
@@ -253,6 +263,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const rankTimeoutRef = useRef<NodeJS.Timeout>();
   const messageTimeoutRef = useRef<NodeJS.Timeout>();
+  const clickHintTimeoutRef = useRef<NodeJS.Timeout>();
 
   const handleSave = useCallback((showToast: boolean) => {
     const { items, ...gameState } = state;
@@ -348,6 +359,38 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       }, 7000);
       return () => { if(messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current); };
   }, [state.playerName, state.goldenBean.active, t]);
+
+  // Click Hint Logic
+  useEffect(() => {
+    if (clickHintTimeoutRef.current) clearTimeout(clickHintTimeoutRef.current);
+
+    const checkIdle = () => {
+      const now = Date.now();
+      if (now - state.lastClickTime > CLICK_HINT_IDLE_TIME) {
+        // After 4s of idle, start toggling
+        const hintInterval = setInterval(() => {
+          dispatch({ type: 'TOGGLE_CLICK_HINT', payload: !state.showClickHint });
+        }, 700); // Blink every 0.7s
+
+        if (clickHintTimeoutRef.current) clearTimeout(clickHintTimeoutRef.current);
+        clickHintTimeoutRef.current = hintInterval;
+      } else {
+        // Not idle, make sure hint is hidden (or shown if you prefer)
+        if (state.showClickHint) {
+            dispatch({ type: 'TOGGLE_CLICK_HINT', payload: false });
+        }
+      }
+    };
+    
+    // Initial check
+    const initialTimeout = setTimeout(checkIdle, CLICK_HINT_IDLE_TIME);
+
+    return () => {
+      if (clickHintTimeoutRef.current) clearTimeout(clickHintTimeoutRef.current);
+      clearTimeout(initialTimeout);
+    };
+  }, [state.lastClickTime, state.showClickHint]);
+
 
   return (
     <GameContext.Provider value={{ state, dispatch: enhancedDispatch }}>

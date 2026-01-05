@@ -60,6 +60,8 @@ export interface GameState {
   currentItemIndex: number | null;
   myRank: number | null;
   message: string;
+  lastClickTime: number;
+  showClickHint: boolean;
 }
 
 export type GameAction =
@@ -75,4 +77,5 @@ export type GameAction =
   | { type: 'TOGGLE_ITEM_POPUP', payload: { isOpen: boolean, itemIndex?: number } }
   | { type: 'TOGGLE_RANKING_MODAL', payload: boolean }
   | { type: 'UPDATE_MY_RANK', payload: number | null }
-  | { type: 'UPDATE_MESSAGE', payload: { t: (key: string, options?: any) => string } };
+  | { type: 'UPDATE_MESSAGE', payload: { t: (key: string, options?: any) => string } }
+  | { type: 'TOGGLE_CLICK_HINT', payload: boolean };
