@@ -4,8 +4,10 @@ import React, { createContext, useReducer, useEffect, ReactNode, useRef, useCall
 import { useToast } from "@/hooks/use-toast";
 import { GameState, GameAction, Item } from '@/types/game';
 import { initialItems, levels as levelNames } from '@/lib/game-data';
-import { initFirebase, saveToFirebase, fetchMyRank } from '@/lib/firebase';
+import { saveToFirebase, fetchMyRank } from '@/lib/firebase-service';
 import { useI18n } from '@/locales/client';
+import { useAuth, useFirestore, useUser, initiateAnonymousSignIn } from '@/firebase';
+import type { User } from 'firebase/auth';
 
 const SAVE_KEY = 'careerBrewSaveV1.0';
 const GOLDEN_INTERVAL = 10 * 60 * 1000; // 10 minutes
@@ -80,7 +82,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       return {
         ...action.payload.initialState,
         isFirstLoad: true,
-        playerId: generateUUID(),
+        playerId: action.payload.user?.uid || generateUUID(),
         nextGoldenTime: Date.now() + GOLDEN_INTERVAL,
         lastClickTime: Date.now(),
       }
@@ -277,15 +279,19 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
 export const GameContext = createContext<{ state: GameState; dispatch: React.Dispatch<GameAction> } | undefined>(undefined);
 
-export const GameProvider = ({ children }: { children: ReactNode }) => {
+const GameProviderContent = ({ children }: { children: ReactNode }) => {
   const { t, i18n } = useI18n();
   const [state, dispatch] = useReducer(gameReducer, getInitialState(t));
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const auth = useAuth();
+  const { user, isUserLoading } = useUser();
   
   const gameLoopRef = useRef<number>();
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const rankTimeoutRef = useRef<NodeJS.Timeout>();
   const messageTimeoutRef = useRef<NodeJS.Timeout>();
+  const isInitialLoad = useRef(true);
 
   const handleSave = useCallback((showToast: boolean) => {
     const { items, ...gameState } = state;
@@ -296,12 +302,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
     if (state.playerId && state.playerName) {
       const score = state.baseBps * (state.isFever ? 5 : 1);
-      saveToFirebase(state.playerId, state.playerName, score);
+      saveToFirebase(firestore, state.playerId, state.playerName, score);
     }
     if (showToast) {
       toast({ title: t('game_saved_title'), description: t('game_saved_desc') });
     }
-  }, [state, toast, t]);
+  }, [state, toast, t, firestore]);
 
   const handleReset = useCallback(() => {
     if (window.confirm(t('reset_confirm'))) {
@@ -331,23 +337,40 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       if(gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
     }
   }, []);
-
-  // Load Logic
+  
+  // Auth & Load Logic
   useEffect(() => {
-    initFirebase();
+    if (isUserLoading || !isInitialLoad.current) return;
+
+    if (!user) {
+      initiateAnonymousSignIn(auth);
+      // Wait for user to be created, then load/new game
+      return;
+    }
+
+    isInitialLoad.current = false;
     try {
       const savedData = localStorage.getItem(SAVE_KEY);
       if (savedData) {
-        dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedData) });
+        const parsedData = JSON.parse(savedData);
+        // Ensure player ID from save matches current user
+        if (parsedData.gameState.playerId === user.uid) {
+            dispatch({ type: 'LOAD_STATE', payload: parsedData });
+        } else {
+            // Mismatch: maybe user changed. Start a new game for the new user.
+            console.warn("Saved data does not match current user. Starting new game.");
+            localStorage.removeItem(SAVE_KEY); // Clear old data
+            dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user } });
+        }
       } else {
-        dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t) } });
+        dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user } });
       }
     } catch (error) {
       console.error("Failed to load game state:", error);
-      dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t) } });
+      dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user } });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+  }, [user, isUserLoading, auth, t]);
+
 
   // Update default name when language changes
   useEffect(() => {
@@ -369,9 +392,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   // Periodic Rank Fetch
   useEffect(() => {
     const fetchAndUpdateRank = async () => {
-        if(state.playerId) {
+        if(state.playerId && firestore) {
             const currentScore = state.baseBps * (state.isFever ? 5 : 1);
-            const rank = await fetchMyRank(currentScore);
+            const rank = await fetchMyRank(firestore, currentScore);
             dispatch({ type: 'UPDATE_MY_RANK', payload: rank });
         }
     };
@@ -379,7 +402,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     if(rankTimeoutRef.current) clearInterval(rankTimeoutRef.current);
     rankTimeoutRef.current = setInterval(fetchAndUpdateRank, 60000);
     return () => { if(rankTimeoutRef.current) clearTimeout(rankTimeoutRef.current); };
-  }, [state.playerId, state.baseBps, state.isFever]);
+  }, [state.playerId, state.baseBps, state.isFever, firestore]);
 
   // Periodic Message Update
   useEffect(() => {
@@ -399,3 +422,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     </GameContext.Provider>
   );
 };
+
+export const GameProvider = ({ children }: { children: ReactNode }) => (
+  <GameProviderContent>{children}</GameProviderContent>
+);

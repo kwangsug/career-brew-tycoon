@@ -5,11 +5,12 @@ import { GameContext } from './game-provider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchRealRanking, type RankEntry } from '@/lib/firebase';
+import { fetchRealRanking, type RankEntry } from '@/lib/firebase-service';
 import { formatNum } from '@/lib/utils';
 import { Skeleton } from '../ui/skeleton';
 import { Crown } from 'lucide-react';
 import { useI18n } from '@/locales/client';
+import { useFirestore } from '@/firebase';
 
 type TabName = 'national' | 'regional' | 'friend';
 
@@ -44,6 +45,7 @@ export default function RankingModal() {
   const [virtualRankings, setVirtualRankings] = useState<{ regional: RankEntry[], friend: RankEntry[] }>({ regional: [], friend: [] });
   const [isLoading, setIsLoading] = useState(false);
   const { t, i18n } = useI18n();
+  const firestore = useFirestore();
 
   useEffect(() => {
     if (state?.isRankingModalOpen && activeTab === 'national') {
@@ -56,8 +58,9 @@ export default function RankingModal() {
   }, [state?.isRankingModalOpen, activeTab]);
 
   const loadNationalRanking = async () => {
+    if (!firestore) return;
     setIsLoading(true);
-    const ranks = await fetchRealRanking();
+    const ranks = await fetchRealRanking(firestore);
     setNationalRanking(ranks);
     setIsLoading(false);
   };

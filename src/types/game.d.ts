@@ -1,3 +1,5 @@
+import type { User } from 'firebase/auth';
+
 export interface Item {
   id: string;
   name: string;
@@ -69,7 +71,7 @@ export interface GameState {
 
 export type GameAction =
   | { type: 'LOAD_STATE'; payload: any }
-  | { type: 'NEW_GAME', payload: { initialState: GameState } }
+  | { type: 'NEW_GAME', payload: { initialState: GameState, user: User | null } }
   | { type: 'SET_PLAYER_NAME'; payload: string }
   | { type: 'SET_DEFAULT_PLAYER_NAME'; payload: string }
   | { type: 'GAME_TICK' }
