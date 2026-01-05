@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { I18nProvider, useI18n } from '@/locales/client';
+import { ShoppingCart, Trophy, Save, Trash2 } from 'lucide-react';
 
 const GameUI = () => {
   const { state, dispatch } = useContext(GameContext);
@@ -53,6 +54,30 @@ const GameUI = () => {
         <StatsPanel />
         <GameCanvas />
         <Footer />
+
+        <div className="absolute bottom-4 right-4 flex flex-col gap-2">
+          <Button
+            size="icon"
+            className="rounded-full h-14 w-14 shadow-lg relative"
+            onClick={() => dispatch({ type: "TOGGLE_STORE_MODAL", payload: true })}
+          >
+            <ShoppingCart className="h-7 w-7" />
+             {state.canAffordNewItem && (
+              <span className="absolute -top-1 -right-1 flex h-5 w-5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs text-white font-black">N</span>
+              </span>
+            )}
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+            className="rounded-full h-14 w-14 shadow-lg"
+            onClick={() => dispatch({ type: "TOGGLE_RANKING_MODAL", payload: true })}
+          >
+            <Trophy className="h-7 w-7" />
+          </Button>
+        </div>
       </div>
 
       <StoreModal />
