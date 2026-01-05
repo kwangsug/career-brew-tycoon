@@ -160,6 +160,18 @@ const GameCanvas = () => {
       animationFrameId = requestAnimationFrame(render);
     };
 
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = "https://i.postimg.cc/CKrNbX4G/fd9845a6_1ac8_4dbb_9419_1fee5445e2c6.jpg";
+    image.onload = () => {
+      if (roasterImgRef.current) {
+        // This is a trick to make the hidden Image component load the image into the browser cache
+        // and get its properties, but we'll use a new Image object for drawing to have more control.
+      }
+    }
+    // @ts-ignore
+    roasterImgRef.current = image;
+
     render();
 
     return () => {
@@ -169,20 +181,11 @@ const GameCanvas = () => {
 
   return (
     <div className={`relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm overflow-hidden ${state?.isFever ? 'fever-bg' : ''}`}>
-      <Image
-        ref={roasterImgRef}
-        src="https://i.postimg.cc/CKrNbX4G/fd9845a6_1ac8_4dbb_9419_1fee5445e2c6.jpg"
-        data-ai-hint="coffee roaster illustration"
-        alt="Coffee Roaster"
-        width={400}
-        height={400}
-        className="hidden"
-      />
       <canvas
         ref={canvasRef}
         id="game"
         width="400"
-        height="250"
+        height="400"
         className="w-full h-full cursor-pointer touch-none"
         onMouseDown={handleInput}
         onTouchStart={handleInput}
