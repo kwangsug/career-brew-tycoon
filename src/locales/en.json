@@ -38,15 +38,15 @@
         "game_saved_desc": "Your progress has been saved locally and to the leaderboard.",
         "reset_confirm": "⚠️ Are you sure you want to reset all progress? This cannot be undone.",
         "barista": "barista",
-        "message1": "{name}, more caffeine is needed!",
-        "message2": "Sleep is for the weak, {name}!",
-        "message3": "The coffee shop next door is watching you, {name}.",
-        "message4": "{name}'s fingers are a national treasure.",
-        "message5": "To Mars we go, {name}!",
-        "message6": "Rank 1 is just around the corner, {name}!",
-        "message7": "It's not a bug, it's your skill, {name}.",
-        "message8": "{name}, you're working overtime today, right?",
-        "message9": "You've become a money-making machine, {name}.",
+        "message1": "{{name}}, more caffeine is needed!",
+        "message2": "Sleep is for the weak, {{name}}!",
+        "message3": "The coffee shop next door is watching you, {{name}}.",
+        "message4": "{{name}}'s fingers are a national treasure.",
+        "message5": "To Mars we go, {{name}}!",
+        "message6": "Rank 1 is just around the corner, {{name}}!",
+        "message7": "It's not a bug, it's your skill, {{name}}.",
+        "message8": "{{name}}, you're working overtime today, right?",
+        "message9": "You've become a money-making machine, {{name}}.",
         "regional_npcs": [
             "Gangnam Landlord", "Pangyo Coder", "Yeoksam Artisan", "Hongdae Hipster", "Local Starbucks", "Next-door Ediya", "Upstairs Neighbor", "Town Unemployed", "Convenience King", "Han River Ramen Lover"
         ],
@@ -134,3 +134,5 @@
         "item_37_desc": "Creating a new universe. And that universe is filled with coffee."
     }
 }
+
+    
