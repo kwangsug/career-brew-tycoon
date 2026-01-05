@@ -21,20 +21,18 @@ export default function StoreModal() {
 
   return (
     <Dialog open={state.isStoreModalOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-md flex flex-col max-h-[80vh]">
+      <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl text-center">🛒 {t('store_title')}</DialogTitle>
           <DialogDescription className="text-center">{t('store_subtitle')}</DialogDescription>
         </DialogHeader>
-        <div className="flex-grow overflow-hidden -mx-6">
-          <ScrollArea className="h-full px-6">
-            <div className="space-y-3 pb-6">
-              {state.items.map((item, index) => (
-                <ItemCard key={item.id} item={item} index={index} />
-              ))}
-            </div>
-          </ScrollArea>
-        </div>
+        <ScrollArea className="flex-1 -mx-6 px-6">
+          <div className="space-y-3 pb-4">
+            {state.items.map((item, index) => (
+              <ItemCard key={item.id} item={item} index={index} />
+            ))}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
