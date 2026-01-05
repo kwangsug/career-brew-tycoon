@@ -30,7 +30,10 @@ export function formatNum(num: number, lang: string = 'en'): string {
             unitIndex++;
         }
         
-        return `${Math.floor(tempNum).toLocaleString('ko-KR')}${units[unitIndex]}`;
+        const rx = /\.00$|\.0$|(\.\d*?[1-9])0+$/;
+        const formattedNum = tempNum.toFixed(2).replace(rx, "$1");
+        
+        return `${formattedNum}${units[unitIndex]}`;
     }
 
     const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
