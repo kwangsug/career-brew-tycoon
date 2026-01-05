@@ -1,0 +1,193 @@
+{
+  "entities": {
+    "GameState": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GameState",
+      "type": "object",
+      "description": "Represents the overall state of the game, including player stats and game progress.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the game state."
+        },
+        "beans": {
+          "type": "number",
+          "description": "The number of beans the player has."
+        },
+        "baseBps": {
+          "type": "number",
+          "description": "Base beans per second the player generates."
+        },
+        "baseClick": {
+          "type": "number",
+          "description": "Base beans per click the player generates."
+        },
+        "manualTotal": {
+          "type": "number",
+          "description": "Total number of beans manually roasted."
+        },
+        "feverGauge": {
+          "type": "number",
+          "description": "The player's fever gauge."
+        },
+        "isFever": {
+          "type": "boolean",
+          "description": "Whether the player is in fever mode."
+        },
+        "lastTime": {
+          "type": "number",
+          "description": "The last time the game state was updated."
+        },
+        "clickScale": {
+          "type": "number",
+          "description": "The click scale of the game."
+        },
+        "playerName": {
+          "type": "string",
+          "description": "The name of the player."
+        },
+        "playerId": {
+          "type": "string",
+          "description": "The unique identifier of the player."
+        },
+        "nextGoldenTime": {
+          "type": "number",
+          "description": "The number of milliseconds until the next golden bean."
+        }
+      },
+      "required": [
+        "id",
+        "beans",
+        "baseBps",
+        "baseClick",
+        "manualTotal",
+        "playerName",
+        "playerId"
+      ]
+    },
+    "Item": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Item",
+      "type": "object",
+      "description": "Represents an item that can be purchased in the store to boost bean production.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the item."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the item."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of the item (bps or click)."
+        },
+        "basePrice": {
+          "type": "number",
+          "description": "The base price of the item."
+        },
+        "val": {
+          "type": "number",
+          "description": "The value of the item (bps or click)."
+        },
+        "owned": {
+          "type": "number",
+          "description": "The number of items owned."
+        },
+        "icon": {
+          "type": "string",
+          "description": "The icon of the item.",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string",
+          "description": "The description of the item."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "type",
+        "basePrice",
+        "val",
+        "owned",
+        "icon",
+        "description"
+      ]
+    },
+    "LeaderboardEntry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "LeaderboardEntry",
+      "type": "object",
+      "description": "Represents a single entry in the leaderboard, linking a player to their score.",
+      "properties": {
+        "playerId": {
+          "type": "string",
+          "description": "Reference to Player. (Relationship: Player 1:N LeaderboardEntry)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the player."
+        },
+        "score": {
+          "type": "number",
+          "description": "The score of the player."
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "The timestamp of the score."
+        }
+      },
+      "required": [
+        "playerId",
+        "name",
+        "score",
+        "timestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/gameState",
+        "definition": {
+          "entityName": "GameState",
+          "schema": {
+            "$ref": "#/backend/entities/GameState"
+          },
+          "description": "Stores the game state for each user. The userId is the user's Firebase Auth UID, ensuring path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/leaderboard/{playerId}",
+        "definition": {
+          "entityName": "LeaderboardEntry",
+          "schema": {
+            "$ref": "#/backend/entities/LeaderboardEntry"
+          },
+          "description": "Stores leaderboard entries. Includes the player's name (denormalized).",
+          "params": [
+            {
+              "name": "playerId",
+              "description": "The unique ID of the player, used as the document ID."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support a clicker game with persistent user data, a leaderboard, and a store. The core principle is Authorization Independence, achieved through path-based ownership and denormalization where necessary. This eliminates the need for `get()` calls in security rules, enabling atomic operations.\n\n1.  **User Data**: Uses path-based ownership (`/users/{userId}/gameState`) for maximum security and ease of rules implementation. Items are stored in the same document as the game state, because having many items could lead to many reads for a single user if this was a subcollection.\n2.  **Leaderboard**: Leaderboard entries are stored in a flat collection (`/leaderboard`). This supports efficient `list` operations for the global leaderboard. The leaderboard entries contain the player's ID and name (denormalized), but authorization is not based on this denormalization.\n\nThis structure prioritizes security, scalability, and debuggability by adhering to the core design principles and strategy mandates."
+  }
+}

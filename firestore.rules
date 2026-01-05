@@ -1,0 +1,93 @@
+/**
+ * Core Philosophy: This ruleset enforces a strict user-ownership model for all personal game data,
+ * ensuring that a user can only access and modify their own information. A separate public leaderboard
+ * allows for global read access but restricts write operations to the owner of the score.
+ *
+ * Data Structure:
+ * - /users/{userId}/gameState/{gameStateId}: Contains all private game state for a specific user,
+ *   nested under their unique Firebase Auth UID. This path-based ownership is the cornerstone of the security model.
+ * - /leaderboard/{playerId}: A top-level, flat collection for public leaderboard scores, designed for
+ *   efficient querying.
+ *
+ * Key Security Decisions:
+ * - Path-Based Ownership: User data is secured by matching the authenticated user's ID (`request.auth.uid`)
+ *   with the `{userId}` wildcard in the path. This is the most secure and performant way to manage user-owned data.
+ * - Public Reads, Private Writes: The `/leaderboard` collection is publicly readable by anyone (including
+ *   unauthenticated users) but can only be written to by the authenticated owner of the score.
+ * - Relational Integrity: On creation, rules enforce that internal ID fields (e.g., `playerId`) match the
+ *   corresponding document or parent path IDs. These fields are then enforced as immutable on updates to prevent re-association.
+ * - Deny by Default: All operations are implicitly denied unless an `allow` rule explicitly grants access.
+ *   Permissions for operations like `list` or `delete` that are not explicitly needed are set to `false`.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+
+    /**
+     * Returns true if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Returns true if the authenticated user's UID matches the provided userId.
+     * This is the primary function for enforcing data ownership.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Returns true if the document exists AND the user is the owner.
+     * Used for safe update and delete operations.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    // ------------------------------------------------------------------------
+    // User-Specific Data Rules
+    // ------------------------------------------------------------------------
+
+    /**
+     * @description Secures a user's private game state. Only the authenticated owner can read or write their own game data.
+     * @path        /users/{userId}/gameState/{gameStateId}
+     * @allow       A signed-in user (auth.uid: 'user123') can (create) a document at `/users/user123/gameState/main`.
+     * @deny        A different user (auth.uid: 'user456') trying to (get) a document at `/users/user123/gameState/main`.
+     * @principle   Restricts access to a user's own data tree using path-based ownership.
+     */
+    match /users/{userId}/gameState/{gameStateId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.playerId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.playerId == resource.data.playerId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    // ------------------------------------------------------------------------
+    // Public Data Rules
+    // ------------------------------------------------------------------------
+
+    /**
+     * @description Manages the global leaderboard. All users can read the leaderboard, but only the
+     *              owner of a score can create, update, or delete it.
+     * @path        /leaderboard/{playerId}
+     * @allow       Any user (even unauthenticated) can (list) the entire `/leaderboard` collection.
+     * @allow       A signed-in user (auth.uid: 'player123') can (create) their own score at `/leaderboard/player123`.
+     * @deny        A signed-in user (auth.uid: 'player456') trying to (update) the score at `/leaderboard/player123`.
+     * @principle   Enables public read access while enforcing document ownership for all write operations.
+     */
+    match /leaderboard/{playerId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isOwner(playerId) && request.resource.data.playerId == playerId;
+      allow update: if isExistingOwner(resource.data.playerId) && request.resource.data.playerId == resource.data.playerId;
+      allow delete: if isExistingOwner(resource.data.playerId);
+    }
+  }
+}
