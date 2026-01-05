@@ -21,22 +21,18 @@ export default function StoreModal() {
 
   return (
     <Dialog open={state.isStoreModalOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] p-0">
-        <div className="flex flex-col h-full max-h-[90vh]">
-          <DialogHeader className="p-6 pb-4">
-            <DialogTitle className="font-headline text-2xl text-center">🛒 {t('store_title')}</DialogTitle>
-            <DialogDescription className="text-center">{t('store_subtitle')}</DialogDescription>
-          </DialogHeader>
-          <div className="flex-1 min-h-0">
-            <ScrollArea className="h-full">
-              <div className="space-y-3 px-6 pb-6">
-                {state.items.map((item, index) => (
-                  <ItemCard key={item.id} item={item} index={index} />
-                ))}
-              </div>
-            </ScrollArea>
+      <DialogContent className="sm:max-w-md max-h-[90vh] p-0 flex flex-col">
+        <DialogHeader className="p-6 pb-4">
+          <DialogTitle className="font-headline text-2xl text-center">🛒 {t('store_title')}</DialogTitle>
+          <DialogDescription className="text-center">{t('store_subtitle')}</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="flex-1 overflow-y-auto">
+          <div className="space-y-3 px-6 pb-6">
+            {state.items.map((item, index) => (
+              <ItemCard key={item.id} item={item} index={index} />
+            ))}
           </div>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
