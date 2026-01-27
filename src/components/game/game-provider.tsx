@@ -15,11 +15,19 @@ const CLICK_HINT_IDLE_TIME = 4000; // 4 seconds
 
 const generateUUID = () => 'user-' + Math.random().toString(36).substring(2, 9);
 
-const getInitialState = (t: (key: string, options?: any) => string): GameState => {
-  const adjectives = t('random_adjectives', { returnObjects: true }) as string[];
-  const nouns = t('random_nouns', { returnObjects: true }) as string[];
-  const randomName = `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
-  
+const getInitialState = (t: (key: string, options?: any) => string, isClient = false): GameState => {
+  // Use static values for SSR to prevent hydration mismatch
+  // These will be updated on client mount
+  let randomName = "Player";
+  let now = 0;
+
+  if (isClient) {
+    const adjectives = t('random_adjectives', { returnObjects: true }) as string[];
+    const nouns = t('random_nouns', { returnObjects: true }) as string[];
+    randomName = `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+    now = Date.now();
+  }
+
   return {
     beans: 0,
     baseBps: 0,
@@ -28,7 +36,7 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     items: initialItems,
     feverGauge: 0,
     isFever: false,
-    lastTime: Date.now(),
+    lastTime: now,
     clickScale: 1.0,
     playerName: "",
     defaultPlayerName: randomName,
@@ -36,7 +44,7 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     levels: levelNames,
     levelIndex: 0,
     goldenBean: { active: false, x: 0, y: 0, vx: 0, vy: 0, life: 0 },
-    nextGoldenTime: Date.now() + GOLDEN_INTERVAL,
+    nextGoldenTime: now + GOLDEN_INTERVAL,
     particles: [],
     floatingTexts: [],
     isFirstLoad: false,
@@ -46,7 +54,7 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     currentItemIndex: null,
     myRank: null,
     message: "Let's get roasting!",
-    lastClickTime: Date.now(),
+    lastClickTime: now,
     showClickHint: false,
     canAffordNewItem: false,
     notifiedAffordableItems: [],
@@ -303,7 +311,7 @@ export const GameContext = createContext<{ state: GameState; dispatch: React.Dis
 
 const GameProviderContent = ({ children }: { children: ReactNode }) => {
   const { t, i18n } = useI18n();
-  const [state, dispatch] = useReducer(gameReducer, getInitialState(t));
+  const [state, dispatch] = useReducer(gameReducer, getInitialState(t, false));
   const { toast } = useToast();
   const firestore = useFirestore();
   const auth = useAuth();
@@ -377,7 +385,7 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
             } catch (error) {
                 console.error("Anonymous sign in failed:", error);
                 // 로그인 실패 시에도 앱이 멈추지 않고 새 게임을 시작합니다.
-                dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: null } });
+                dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t, true), user: null } });
                 isInitialLoad.current = false;
                 return;
             }
@@ -395,11 +403,11 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
                 dispatch({ type: 'LOAD_STATE', payload: parsedData });
             } else {
                 // 저장된 데이터가 없으면 새 게임을 시작합니다.
-                dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: finalUser } });
+                dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t, true), user: finalUser } });
             }
         } catch (error) {
             console.error("Failed to load or parse game state. Starting new game.", error);
-            dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: finalUser } });
+            dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t, true), user: finalUser } });
         }
     };
 

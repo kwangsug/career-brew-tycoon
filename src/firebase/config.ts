@@ -1,11 +1,11 @@
 export const firebaseConfig = {
-  "projectId": "career-brew",
-  "appId": "1:489775542126:web:4b581a073f1338d1559b7f",
-  "apiKey": "AIzaSyDFQ1H1WMOJCi-aLMNj4Mat2Z1pP9H2JVo",
-  "authDomain": "career-brew.firebaseapp.com",
-  "storageBucket": "career-brew.appspot.com",
-  "messagingSenderId": "489775542126",
-  "measurementId": "G-438QWTEBLY"
+  apiKey: "AIzaSyD3mv9F87KSAJzuk0VYReg7aQfCQ7ak7ko",
+  authDomain: "career-brew.firebaseapp.com",
+  projectId: "career-brew",
+  storageBucket: "career-brew.firebasestorage.app",
+  messagingSenderId: "48722044572",
+  appId: "1:48722044572:web:858470248dee6aab42ef59",
+  measurementId: "G-5MLYRT46P4"
 };
 
 // Custom domains for Firebase Auth
