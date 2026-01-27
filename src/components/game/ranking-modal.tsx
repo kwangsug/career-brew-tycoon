@@ -5,7 +5,7 @@ import { GameContext } from './game-provider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchRealRanking, type RankEntry } from '@/lib/firebase-service';
+import { fetchRealRanking, fetchMyRank, type RankEntry } from '@/lib/firebase-service';
 import { formatNum } from '@/lib/utils';
 import { Skeleton } from '../ui/skeleton';
 import { Crown } from 'lucide-react';
@@ -28,7 +28,7 @@ const RankItem = ({ rank, entry, isMe, youText, lang, perSecondText }: { rank: n
     : `${formatNum(entry.score, lang)} BPS`;
 
   return (
-    <div className={`flex items-center justify-between p-2 rounded-lg ${isMe ? 'bg-primary/10' : ''}`}>
+    <div className={`flex items-center justify-between p-2 rounded-lg ${isMe ? 'bg-primary/20 border-2 border-primary' : ''}`}>
       <div className="flex items-center gap-3">
         <div className="font-bold text-lg w-5 text-center">{rankBadge()}</div>
         <div className={`font-bold ${isMe ? 'text-primary' : ''}`}>{displayName}</div>
@@ -44,17 +44,29 @@ export default function RankingModal() {
   const [nationalRanking, setNationalRanking] = useState<RankEntry[]>([]);
   const [virtualRankings, setVirtualRankings] = useState<{ regional: RankEntry[], friend: RankEntry[] }>({ regional: [], friend: [] });
   const [isLoading, setIsLoading] = useState(false);
+  const [myRank, setMyRank] = useState<number | null>(null);
   const { t, i18n } = useI18n();
   const firestore = useFirestore();
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadNationalRanking = useCallback(async (showLoading = true) => {
-    if (!firestore) return;
+    if (!firestore || !state) return;
     if (showLoading) setIsLoading(true);
     const ranks = await fetchRealRanking(firestore);
     setNationalRanking(ranks);
+
+    // Check if I'm in the top 50, if not fetch my rank
+    const amInList = ranks.some(r => r.id === state.playerId);
+    if (!amInList) {
+      const currentScore = state.baseBps * (state.isFever ? 5 : 1);
+      const rank = await fetchMyRank(firestore, currentScore);
+      setMyRank(rank);
+    } else {
+      setMyRank(null);
+    }
+
     if (showLoading) setIsLoading(false);
-  }, [firestore]);
+  }, [firestore, state]);
 
   // Polling for real-time ranking updates (every 10 seconds)
   useEffect(() => {
@@ -103,7 +115,7 @@ export default function RankingModal() {
     }
   };
   
-  const renderRankingList = (data: RankEntry[]) => {
+  const renderRankingList = (data: RankEntry[], showMyRankIfNotInList = false) => {
     if (isLoading) {
       return Array.from({ length: 10 }).map((_, i) => (
         <div key={i} className="flex items-center justify-between p-2">
@@ -116,13 +128,40 @@ export default function RankingModal() {
       ));
     }
 
-    if (data.length === 0) {
+    const amInList = data.some(r => r.id === state?.playerId);
+    const currentScore = state ? state.baseBps * (state.isFever ? 5 : 1) : 0;
+
+    // Always show my entry if showMyRankIfNotInList is true
+    const showMyEntry = showMyRankIfNotInList && !amInList && state;
+
+    if (data.length === 0 && !showMyEntry) {
       return <div className="text-center p-8 text-muted-foreground">{t('no_ranking_data')}</div>;
     }
 
-    return data.map((entry, index) => (
-      <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
-    ));
+    return (
+      <>
+        {data.map((entry, index) => (
+          <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
+        ))}
+        {showMyEntry && (
+          <>
+            {data.length > 0 && (
+              <div className="flex items-center justify-center py-2 text-muted-foreground">
+                <span className="text-sm">• • •</span>
+              </div>
+            )}
+            <RankItem
+              rank={myRank || 1}
+              entry={{ id: state.playerId, name: state.playerName, score: currentScore }}
+              isMe={true}
+              youText={t('you_text')}
+              lang={i18n.language}
+              perSecondText={t('per_second')}
+            />
+          </>
+        )}
+      </>
+    );
   };
 
 
@@ -140,7 +179,7 @@ export default function RankingModal() {
           </TabsList>
           <div className="flex-grow overflow-y-auto mt-2 pr-2">
             <TabsContent value="national" className="space-y-1">
-              {renderRankingList(nationalRanking)}
+              {renderRankingList(nationalRanking, true)}
             </TabsContent>
             <TabsContent value="regional" className="space-y-1">
               {renderRankingList(virtualRankings.regional)}
