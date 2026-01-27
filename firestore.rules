@@ -85,9 +85,9 @@ service cloud.firestore {
     match /leaderboard/{playerId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isOwner(playerId) && request.resource.data.playerId == playerId;
-      allow update: if isExistingOwner(resource.data.playerId) && request.resource.data.playerId == resource.data.playerId;
-      allow delete: if isExistingOwner(resource.data.playerId);
+      // Simplified: any authenticated user can write to their own document
+      allow create, update: if isOwner(playerId);
+      allow delete: if isOwner(playerId);
     }
   }
 }
