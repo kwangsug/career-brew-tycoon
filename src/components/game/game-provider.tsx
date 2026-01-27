@@ -408,9 +408,11 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
             const savedData = localStorage.getItem(SAVE_KEY);
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
-                // playerId를 현재 사용자로 업데이트하고 로드
-                parsedData.gameState.playerId = finalUser.uid;
-                console.log('🎮 Loading saved game with playerId:', finalUser.uid);
+                // playerId가 없으면 Firebase UID 사용, 있으면 기존 ID 유지
+                if (!parsedData.gameState.playerId) {
+                    parsedData.gameState.playerId = finalUser.uid;
+                }
+                console.log('🎮 Loading saved game with playerId:', parsedData.gameState.playerId);
                 dispatch({ type: 'LOAD_STATE', payload: parsedData });
             } else {
                 // 저장된 데이터가 없으면 새 게임을 시작합니다.

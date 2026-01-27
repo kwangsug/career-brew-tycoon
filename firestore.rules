@@ -85,8 +85,9 @@ service cloud.firestore {
     match /leaderboard/{playerId} {
       allow get: if true;
       allow list: if true;
-      // Simplified: any authenticated user can write to their own document
-      allow create, update: if isOwner(playerId);
+      // Allow any authenticated user to write (playerId matches document ID)
+      // This enables persistent local playerId across Firebase auth changes
+      allow create, update: if isSignedIn();
       allow delete: if isOwner(playerId);
     }
   }
