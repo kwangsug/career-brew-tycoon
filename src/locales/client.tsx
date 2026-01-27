@@ -1,66 +1,38 @@
 "use client";
 
 import { createInstance } from "i18next";
-import { I18nextProvider, useTranslation } from "react-i18next";
-import { useEffect, useState, createContext, useContext, useCallback } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import resources from "./resources";
 
-const LANGUAGE_KEY = 'careerBrewLanguage';
+// Supported languages: ko, ja, en (fallback)
+const SUPPORTED_LANGUAGES = ["ko", "ja", "en"];
 
 const I18nContext = createContext<{
   t: (key: string, options?: any) => string;
   i18n: any;
   language: string;
-  setLanguage: (lang: string) => void;
-  availableLanguages: string[];
 }>({
   t: (key: string) => key,
   i18n: {},
   language: "en",
-  setLanguage: () => {},
-  availableLanguages: [],
 });
 
 export const useI18n = () => useContext(I18nContext);
 
-const languageNames: Record<string, string> = {
-  en: "English",
-  ko: "한국어",
-  ja: "日本語",
-};
-
-export const getLanguageName = (code: string) => languageNames[code] || code;
-
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState("en");
-  const availableLanguages = Object.keys(resources);
+  const [language, setLanguage] = useState("en");
 
   useEffect(() => {
-    // Check saved preference first
-    const savedLanguage = localStorage.getItem(LANGUAGE_KEY);
-    if (savedLanguage && availableLanguages.includes(savedLanguage)) {
-      setLanguageState(savedLanguage);
-      return;
-    }
-
-    // Fall back to browser language detection
+    // Auto-detect browser language (ko, ja → use it, otherwise → en)
     const detectedLanguage = navigator.language.split("-")[0];
-    setLanguageState(
-      availableLanguages.includes(detectedLanguage) ? detectedLanguage : "en"
-    );
+    const lang = SUPPORTED_LANGUAGES.includes(detectedLanguage) ? detectedLanguage : "en";
+    setLanguage(lang);
   }, []);
 
-  // Update HTML lang attribute when language changes
+  // Update HTML lang attribute
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
-
-  const setLanguage = useCallback((lang: string) => {
-    if (availableLanguages.includes(lang)) {
-      setLanguageState(lang);
-      localStorage.setItem(LANGUAGE_KEY, lang);
-    }
-  }, [availableLanguages]);
 
   const i18n = createInstance({
     lng: language,
@@ -73,7 +45,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const t = i18n.t.bind(i18n);
 
   return (
-    <I18nContext.Provider value={{ t, i18n, language, setLanguage, availableLanguages }}>
+    <I18nContext.Provider value={{ t, i18n, language }}>
         {children}
     </I18nContext.Provider>
   );
