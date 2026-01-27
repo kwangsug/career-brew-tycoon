@@ -362,35 +362,56 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
   
   // Auth & Load Logic
   useEffect(() => {
-    if (isUserLoading || !isInitialLoad.current) return;
-
-    if (!user) {
-      initiateAnonymousSignIn(auth);
-      // Wait for user to be created, then load/new game
-      return;
+    if (isUserLoading || !isInitialLoad.current) {
+        return; // Wait until auth state is resolved or if initial load is already done
     }
 
-    isInitialLoad.current = false;
-    try {
-      const savedData = localStorage.getItem(SAVE_KEY);
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        // Ensure player ID from save matches current user
-        if (parsedData.gameState.playerId === user.uid) {
-            dispatch({ type: 'LOAD_STATE', payload: parsedData });
-        } else {
-            // Mismatch: maybe user changed. Start a new game for the new user.
-            console.warn("Saved data does not match current user. Starting new game.");
-            localStorage.removeItem(SAVE_KEY); // Clear old data
-            dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user } });
+    const loadGame = async (currentUser: User | null) => {
+        let finalUser = currentUser;
+
+        if (!finalUser) {
+            try {
+                // 1. 익명 로그인을 먼저 시도하고, 완료될 때까지 기다립니다.
+                const userCredential = await initiateAnonymousSignIn(auth);
+                finalUser = userCredential.user;
+            } catch (error) {
+                console.error("Anonymous sign in failed:", error);
+                // 로그인 실패 시에도 앱이 멈추지 않고 새 게임을 시작합니다.
+                dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: null } });
+                isInitialLoad.current = false;
+                return;
+            }
         }
-      } else {
-        dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user } });
-      }
-    } catch (error) {
-      console.error("Failed to load game state:", error);
-      dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user } });
+
+        isInitialLoad.current = false; // Mark initial load as complete
+
+        // 2. 로그인이 보장된 후에야 로컬 데이터를 불러옵니다.
+        try {
+            const savedData = localStorage.getItem(SAVE_KEY);
+            if (savedData) {
+                const parsedData = JSON.parse(savedData);
+                if (parsedData.gameState.playerId === finalUser.uid) {
+                    dispatch({ type: 'LOAD_STATE', payload: parsedData });
+                } else {
+                    // 다른 사용자의 데이터일 경우, 새 게임을 시작합니다.
+                    localStorage.removeItem(SAVE_KEY);
+                    dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: finalUser } });
+                }
+            } else {
+                // 저장된 데이터가 없으면 새 게임을 시작합니다.
+                dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: finalUser } });
+            }
+        } catch (error) {
+            console.error("Failed to load or parse game state. Starting new game.", error);
+            dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: finalUser } });
+        }
+    };
+
+    // 3. Firebase의 초기 인증 상태 확인이 끝나면 loadGame 함수를 실행합니다.
+    if (!isUserLoading) {
+      loadGame(user);
     }
+
   }, [user, isUserLoading, auth, t]);
 
 
