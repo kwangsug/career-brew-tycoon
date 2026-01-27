@@ -63,7 +63,7 @@ export default function RankingModal() {
     // Check if I'm in the top 50, if not fetch my rank (check by id or name)
     const amInList = ranks.some(r => r.id === currentState.playerId || r.name === currentState.playerName);
     if (!amInList) {
-      const currentScore = currentState.baseBps * (currentState.isFever ? 5 : 1);
+      const currentScore = (currentState.baseBps + currentState.baseClick) * (currentState.isFever ? 5 : 1);
       const rank = await fetchMyRank(firestore, currentScore);
       setMyRank(rank);
     } else {
@@ -100,7 +100,7 @@ export default function RankingModal() {
         regional: t('regional_npcs', { returnObjects: true }) as string[],
         friend: t('friend_npcs', { returnObjects: true }) as string[]
     };
-    const currentScore = state.baseBps * (state.isFever ? 5 : 1);
+    const currentScore = (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1);
     let rankData: RankEntry[] = [];
     npcNames[type].forEach((name, i) => {
         let multiplier = (type === 'regional') ? Math.pow(10, (Math.random() * 4) - 2) : Math.random() * 2 + 0.1;
@@ -137,7 +137,7 @@ export default function RankingModal() {
     // Check by playerId first, then by name as fallback
     const myEntry = data.find(r => r.id === state?.playerId || r.name === state?.playerName);
     const amInList = !!myEntry;
-    const currentScore = state ? state.baseBps * (state.isFever ? 5 : 1) : 0;
+    const currentScore = state ? (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1) : 0;
 
     // Always show my entry if showMyRankIfNotInList is true
     const showMyEntry = showMyRankIfNotInList && !amInList && state;

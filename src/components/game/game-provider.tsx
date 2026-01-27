@@ -332,7 +332,8 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
     const nameToSave = state.playerName || state.defaultPlayerName;
     if (state.playerId && nameToSave) {
-      const score = state.baseBps * (state.isFever ? 5 : 1);
+      // Use baseBps + baseClick as score (similar to level calculation)
+      const score = (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1);
       console.log('🎮 Saving game - playerId:', state.playerId, 'name:', nameToSave, 'score:', score);
       saveToFirebase(firestore, state.playerId, nameToSave, score);
     } else {
@@ -455,7 +456,7 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchAndUpdateRank = async () => {
         if(state.playerId && firestore) {
-            const currentScore = state.baseBps * (state.isFever ? 5 : 1);
+            const currentScore = (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1);
             const rank = await fetchMyRank(firestore, currentScore);
             dispatch({ type: 'UPDATE_MY_RANK', payload: rank });
         }
@@ -464,7 +465,7 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
     if(rankTimeoutRef.current) clearInterval(rankTimeoutRef.current);
     rankTimeoutRef.current = setInterval(fetchAndUpdateRank, 60000);
     return () => { if(rankTimeoutRef.current) clearTimeout(rankTimeoutRef.current); };
-  }, [state.playerId, state.baseBps, state.isFever, firestore]);
+  }, [state.playerId, state.baseBps, state.baseClick, state.isFever, firestore]);
 
   // Periodic Message Update
   useEffect(() => {
