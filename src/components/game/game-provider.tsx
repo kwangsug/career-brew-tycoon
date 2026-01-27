@@ -371,20 +371,24 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
   
   // Auth & Load Logic
   useEffect(() => {
+    console.log('🎮 Auth effect - isUserLoading:', isUserLoading, 'isInitialLoad:', isInitialLoad.current, 'user:', user?.uid);
     if (isUserLoading || !isInitialLoad.current) {
         return; // Wait until auth state is resolved or if initial load is already done
     }
 
     const loadGame = async (currentUser: User | null) => {
         let finalUser = currentUser;
+        console.log('🎮 loadGame called - currentUser:', currentUser?.uid);
 
         if (!finalUser) {
             try {
                 // 1. 익명 로그인을 먼저 시도하고, 완료될 때까지 기다립니다.
+                console.log('🎮 Starting anonymous sign-in...');
                 const userCredential = await initiateAnonymousSignIn(auth);
                 finalUser = userCredential.user;
+                console.log('🎮 Anonymous sign-in success:', finalUser.uid);
             } catch (error) {
-                console.error("Anonymous sign in failed:", error);
+                console.error("🎮 Anonymous sign in failed:", error);
                 // 로그인 실패 시에도 앱이 멈추지 않고 새 게임을 시작합니다.
                 dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t, true), user: null } });
                 isInitialLoad.current = false;
@@ -393,6 +397,7 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
         }
 
         isInitialLoad.current = false; // Mark initial load as complete
+        console.log('🎮 Final user UID:', finalUser.uid);
 
         // 2. 로그인이 보장된 후에야 로컬 데이터를 불러옵니다.
         try {
@@ -401,13 +406,15 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
                 const parsedData = JSON.parse(savedData);
                 // playerId를 현재 사용자로 업데이트하고 로드
                 parsedData.gameState.playerId = finalUser.uid;
+                console.log('🎮 Loading saved game with playerId:', finalUser.uid);
                 dispatch({ type: 'LOAD_STATE', payload: parsedData });
             } else {
                 // 저장된 데이터가 없으면 새 게임을 시작합니다.
+                console.log('🎮 No saved data, starting new game with playerId:', finalUser.uid);
                 dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t, true), user: finalUser } });
             }
         } catch (error) {
-            console.error("Failed to load or parse game state. Starting new game.", error);
+            console.error("🎮 Failed to load or parse game state. Starting new game.", error);
             dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t, true), user: finalUser } });
         }
     };
@@ -432,8 +439,12 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
   
   // Periodic Save
   useEffect(() => {
+      console.log('🎮 Setting up auto-save timer (30s interval)');
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-      saveTimeoutRef.current = setInterval(() => handleSave(false), 30000);
+      saveTimeoutRef.current = setInterval(() => {
+        console.log('🎮 Auto-save triggered');
+        handleSave(false);
+      }, 30000);
       return () => { if(saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current); };
   }, [handleSave]);
 
