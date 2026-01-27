@@ -17,17 +17,21 @@ import {FirestorePermissionError} from '@/firebase/errors';
  * Does NOT await the write operation internally.
  */
 export function setDocumentNonBlocking(docRef: DocumentReference, data: any, options: SetOptions) {
-  setDoc(docRef, data, options).catch(error => {
-    errorEmitter.emit(
-      'permission-error',
-      new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'write', // or 'create'/'update' based on options
-        requestResourceData: data,
-      })
-    )
-  })
-  // Execution continues immediately
+  setDoc(docRef, data, options)
+    .then(() => {
+      console.log('🔥 Firestore write SUCCESS:', docRef.path);
+    })
+    .catch(error => {
+      console.error('🔥 Firestore write FAILED:', docRef.path, error?.code, error?.message);
+      errorEmitter.emit(
+        'permission-error',
+        new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'write',
+          requestResourceData: data,
+        })
+      )
+    })
 }
 
 

@@ -332,12 +332,13 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
     if (state.playerId && state.playerName) {
       const score = state.baseBps * (state.isFever ? 5 : 1);
+      console.log('🎮 Saving game - playerId:', state.playerId, 'authUid:', user?.uid, 'match:', state.playerId === user?.uid);
       saveToFirebase(firestore, state.playerId, state.playerName, score);
     }
     if (showToast) {
       toast({ title: t('game_saved_title'), description: t('game_saved_desc') });
     }
-  }, [state, toast, t, firestore]);
+  }, [state, toast, t, firestore, user]);
 
   const handleReset = useCallback(() => {
     if (window.confirm(t('reset_confirm'))) {
