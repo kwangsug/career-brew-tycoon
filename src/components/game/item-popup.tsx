@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatNum } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import AISuggester from './ai-suggester';
 import { useI18n } from '@/locales/client';
 
 export default function ItemPopup() {
@@ -38,11 +37,6 @@ export default function ItemPopup() {
 
   const handleClose = () => {
     dispatch({ type: 'TOGGLE_ITEM_POPUP', payload: { isOpen: false } });
-  };
-  
-  const handleSelectName = (name: string) => {
-    dispatch({ type: 'UPDATE_ITEM_NAME', payload: { index: itemIndex, name } });
-    handleClose();
   };
 
   return (
@@ -86,8 +80,6 @@ export default function ItemPopup() {
           <span className="ml-2">{formatNum(price, i18n.language)}</span>
           <span className="ml-2">{t('purchase')}</span>
         </Button>
-        
-        <AISuggester item={item} onSelectName={handleSelectName} />
       </DialogContent>
     </Dialog>
   );
