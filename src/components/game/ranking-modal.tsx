@@ -66,16 +66,11 @@ export default function RankingModal() {
     console.log('🏆 Fetched ranks:', ranks.length);
     setNationalRanking(ranks);
 
-    // Check if I'm in the top 50, if not fetch my rank (check by id or name)
+    // Check if I'm in the top 50 - prioritize playerId match, then name match
     const myName = currentState.playerName || currentState.defaultPlayerName;
-    const amInList = ranks.some(r => r.id === currentState.playerId || r.name === myName);
-
-    console.log('🏆 Ranking check:', {
-      myPlayerId: currentState.playerId,
-      myName,
-      amInList,
-      ranksInList: ranks.map(r => ({ id: r.id, name: r.name })).slice(0, 5)
-    });
+    const myEntryById = ranks.find(r => r.id === currentState.playerId);
+    const myEntryByName = !myEntryById ? ranks.find(r => r.name === myName) : null;
+    const amInList = !!(myEntryById || myEntryByName);
 
     if (!amInList) {
       const currentScore = (currentState.baseBps + currentState.baseClick) * (currentState.isFever ? 5 : 1);
@@ -153,20 +148,21 @@ export default function RankingModal() {
 
     // Use defaultPlayerName as fallback since playerName might be empty
     const myName = state?.playerName || state?.defaultPlayerName || '';
+    const myPlayerId = state?.playerId || '';
 
-    // Check by playerId first, then by name as fallback
-    const myEntry = data.find(r => r.id === state?.playerId || r.name === myName);
+    // Find my entry - prioritize playerId match, then name match (first one only)
+    const myEntryById = data.find(r => r.id === myPlayerId);
+    const myEntryByName = !myEntryById ? data.find(r => r.name === myName) : null;
+    const myEntry = myEntryById || myEntryByName;
     const amInList = !!myEntry;
     const currentScore = state ? (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1) : 0;
 
-    console.log('🏆 renderRankingList:', {
-      myPlayerId: state?.playerId,
-      myName,
-      amInList,
-      showMyRankIfNotInList,
-      dataLength: data.length,
-      firstFewNames: data.slice(0, 5).map(r => r.name)
-    });
+    // Helper to check if an entry is "me" - only ONE entry should be marked
+    const isMyEntry = (entry: RankEntry) => {
+      if (myEntryById) return entry.id === myPlayerId;
+      if (myEntryByName) return entry.id === myEntryByName.id;
+      return false;
+    };
 
     // Always show my entry if showMyRankIfNotInList is true
     const showMyEntry = showMyRankIfNotInList && !amInList && state;
@@ -178,7 +174,7 @@ export default function RankingModal() {
     return (
       <>
         {data.map((entry, index) => (
-          <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId || entry.name === myName} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
+          <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={isMyEntry(entry)} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
         ))}
         {showMyEntry && (
           <>
