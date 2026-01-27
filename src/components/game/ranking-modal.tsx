@@ -2,7 +2,7 @@
 
 import { useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { GameContext } from './game-provider';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchRealRanking, fetchMyRank, type RankEntry } from '@/lib/firebase-service';
@@ -60,8 +60,8 @@ export default function RankingModal() {
     const ranks = await fetchRealRanking(firestore);
     setNationalRanking(ranks);
 
-    // Check if I'm in the top 50, if not fetch my rank
-    const amInList = ranks.some(r => r.id === currentState.playerId);
+    // Check if I'm in the top 50, if not fetch my rank (check by id or name)
+    const amInList = ranks.some(r => r.id === currentState.playerId || r.name === currentState.playerName);
     if (!amInList) {
       const currentScore = currentState.baseBps * (currentState.isFever ? 5 : 1);
       const rank = await fetchMyRank(firestore, currentScore);
@@ -134,7 +134,9 @@ export default function RankingModal() {
       ));
     }
 
-    const amInList = data.some(r => r.id === state?.playerId);
+    // Check by playerId first, then by name as fallback
+    const myEntry = data.find(r => r.id === state?.playerId || r.name === state?.playerName);
+    const amInList = !!myEntry;
     const currentScore = state ? state.baseBps * (state.isFever ? 5 : 1) : 0;
 
     // Always show my entry if showMyRankIfNotInList is true
@@ -147,7 +149,7 @@ export default function RankingModal() {
     return (
       <>
         {data.map((entry, index) => (
-          <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
+          <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId || entry.name === state?.playerName} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
         ))}
         {showMyEntry && (
           <>
@@ -176,6 +178,7 @@ export default function RankingModal() {
       <DialogContent className="sm:max-w-md flex flex-col max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl text-center">🏆 {t('realtime_rankings')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('realtime_rankings')}</DialogDescription>
         </DialogHeader>
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as TabName)} className="flex flex-col flex-grow min-h-0">
           <TabsList className="grid w-full grid-cols-3">
