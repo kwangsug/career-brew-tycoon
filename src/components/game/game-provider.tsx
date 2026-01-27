@@ -443,18 +443,17 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
     }
   }, [t, i18n.language, state.isFirstLoad]);
   
-  // Use ref to avoid re-creating timer on every state change
+  // Use ref to store latest handleSave for event handlers
   const handleSaveRef = useRef(handleSave);
   handleSaveRef.current = handleSave;
 
-  // Periodic Save - runs once on mount
+  // Save on page unload
   useEffect(() => {
-      console.log('🎮 Setting up auto-save timer (30s interval)');
-      const timer = setInterval(() => {
-        console.log('🎮 Auto-save triggered');
-        handleSaveRef.current(false);
-      }, 30000);
-      return () => clearInterval(timer);
+    const handleBeforeUnload = () => {
+      handleSaveRef.current(false);
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
   // Periodic Rank Fetch

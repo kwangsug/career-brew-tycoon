@@ -39,8 +39,7 @@ const RankItem = ({ rank, entry, isMe, youText, lang, perSecondText }: { rank: n
 };
 
 export default function RankingModal() {
-  console.log('🏆 RankingModal RENDER');
-  const { state, dispatch } = useContext(GameContext);
+    const { state, dispatch } = useContext(GameContext);
   const [activeTab, setActiveTab] = useState<TabName>('national');
   const [nationalRanking, setNationalRanking] = useState<RankEntry[]>([]);
   const [virtualRankings, setVirtualRankings] = useState<{ regional: RankEntry[], friend: RankEntry[] }>({ regional: [], friend: [] });
@@ -56,14 +55,11 @@ export default function RankingModal() {
 
   const loadNationalRanking = useCallback(async (showLoading = true) => {
     const currentState = stateRef.current;
-    console.log('🏆 loadNationalRanking called:', { firestore: !!firestore, currentState: !!currentState });
     if (!firestore || !currentState) {
-      console.log('🏆 Early return - missing firestore or state');
       return;
     }
     if (showLoading) setIsLoading(true);
     const ranks = await fetchRealRanking(firestore);
-    console.log('🏆 Fetched ranks:', ranks.length);
     setNationalRanking(ranks);
 
     // Check if I'm in the top 50 - prioritize playerId match, then name match
@@ -85,9 +81,11 @@ export default function RankingModal() {
 
   // Polling for real-time ranking updates (every 10 seconds)
   useEffect(() => {
-    console.log('🏆 Ranking useEffect:', { isOpen: state?.isRankingModalOpen, activeTab });
     if (state?.isRankingModalOpen && activeTab === 'national') {
-      loadNationalRanking(true);
+      // Save current score before loading ranking
+      dispatch?.({ type: 'SAVE_GAME', payload: { showToast: false } });
+      // Small delay to allow save to complete, then load ranking
+      setTimeout(() => loadNationalRanking(true), 500);
       pollingRef.current = setInterval(() => {
         loadNationalRanking(false); // Don't show loading skeleton on refresh
       }, 10000);
