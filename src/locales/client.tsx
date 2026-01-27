@@ -50,6 +50,11 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  // Update HTML lang attribute when language changes
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   const setLanguage = useCallback((lang: string) => {
     if (availableLanguages.includes(lang)) {
       setLanguageState(lang);
