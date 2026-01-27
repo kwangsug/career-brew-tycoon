@@ -35,6 +35,7 @@ export async function saveToFirebase(
     console.log('🔥 Saving to Firestore:', { playerId, playerName, score });
     const leaderboardRef = doc(db, 'leaderboard', playerId);
     setDocumentNonBlocking(leaderboardRef, {
+      playerId: playerId,
       name: playerName,
       score: score,
       timestamp: Date.now(),
