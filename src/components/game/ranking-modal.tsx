@@ -73,7 +73,7 @@ export default function RankingModal() {
     const amInList = !!(myEntryById || myEntryByName);
 
     if (!amInList) {
-      const currentScore = (currentState.baseBps + currentState.baseClick) * (currentState.isFever ? 5 : 1);
+      const currentScore = currentState.baseBps * (currentState.isFever ? 5 : 1);
       const rank = await fetchMyRank(firestore, currentScore);
       setMyRank(rank);
     } else {
@@ -111,7 +111,7 @@ export default function RankingModal() {
         regional: t('regional_npcs', { returnObjects: true }) as string[],
         friend: t('friend_npcs', { returnObjects: true }) as string[]
     };
-    const currentScore = (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1);
+    const currentScore = state.baseBps * (state.isFever ? 5 : 1);
     const myName = state.playerName || state.defaultPlayerName;
     let rankData: RankEntry[] = [];
     npcNames[type].forEach((name, i) => {
@@ -155,7 +155,7 @@ export default function RankingModal() {
     const myEntryByName = !myEntryById ? data.find(r => r.name === myName) : null;
     const myEntry = myEntryById || myEntryByName;
     const amInList = !!myEntry;
-    const currentScore = state ? (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1) : 0;
+    const currentScore = state ? state.baseBps * (state.isFever ? 5 : 1) : 0;
 
     // Helper to check if an entry is "me" - only ONE entry should be marked
     const isMyEntry = (entry: RankEntry) => {
