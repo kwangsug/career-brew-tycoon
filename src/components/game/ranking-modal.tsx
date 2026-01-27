@@ -39,6 +39,7 @@ const RankItem = ({ rank, entry, isMe, youText, lang, perSecondText }: { rank: n
 };
 
 export default function RankingModal() {
+  console.log('🏆 RankingModal RENDER');
   const { state, dispatch } = useContext(GameContext);
   const [activeTab, setActiveTab] = useState<TabName>('national');
   const [nationalRanking, setNationalRanking] = useState<RankEntry[]>([]);
