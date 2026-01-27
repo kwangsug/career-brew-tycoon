@@ -67,6 +67,8 @@ export interface GameState {
   lastClickTime: number;
   showClickHint: boolean;
   canAffordNewItem: boolean;
+  notifiedAffordableItems: string[];
+  newlyAffordableItem: Item | null;
 }
 
 export type GameAction =
@@ -85,4 +87,5 @@ export type GameAction =
   | { type: 'TOGGLE_STORE_MODAL', payload: boolean }
   | { type: 'UPDATE_MY_RANK', payload: number | null }
   | { type: 'UPDATE_MESSAGE', payload: { t: (key: string, options?: any) => string } }
-  | { type: 'TOGGLE_CLICK_HINT', payload: boolean };
+  | { type: 'TOGGLE_CLICK_HINT', payload: boolean }
+  | { type: 'CLEAR_NEW_ITEM_NOTIFICATION' };

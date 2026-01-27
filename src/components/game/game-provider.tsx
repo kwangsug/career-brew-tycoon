@@ -49,6 +49,8 @@ const getInitialState = (t: (key: string, options?: any) => string): GameState =
     lastClickTime: Date.now(),
     showClickHint: false,
     canAffordNewItem: false,
+    notifiedAffordableItems: [],
+    newlyAffordableItem: null,
   };
 };
 
@@ -142,15 +144,30 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 
       const showHint = now - state.lastClickTime > CLICK_HINT_IDLE_TIME;
 
-      const canAfford = state.items.some(item => {
+      const newBeans = state.beans + beansGained;
+
+      // Find affordable items
+      const affordableItems = state.items.filter(item => {
         const costMultiplier = item.type === 'bps' ? 1.18 : 1.6;
         const price = Math.floor(item.basePrice * Math.pow(costMultiplier, item.owned));
-        return state.beans >= price;
+        return newBeans >= price;
       });
+
+      const canAfford = affordableItems.length > 0;
+
+      // Detect newly affordable item (not yet notified)
+      const newlyAffordable = affordableItems.find(
+        item => !state.notifiedAffordableItems.includes(item.id)
+      );
+
+      // Update notified list if new item found
+      const updatedNotifiedItems = newlyAffordable
+        ? [...state.notifiedAffordableItems, newlyAffordable.id]
+        : state.notifiedAffordableItems;
 
       return {
         ...state,
-        beans: state.beans + beansGained,
+        beans: newBeans,
         lastTime: now,
         particles: newParticles,
         floatingTexts: newFloatingTexts,
@@ -160,6 +177,8 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         goldenBean: newGoldenBean,
         showClickHint: showHint,
         canAffordNewItem: canAfford,
+        notifiedAffordableItems: updatedNotifiedItems,
+        newlyAffordableItem: newlyAffordable || null,
       };
     }
     case 'CANVAS_CLICK': {
@@ -267,6 +286,9 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
     }
     case 'TOGGLE_CLICK_HINT': {
       return { ...state, showClickHint: action.payload };
+    }
+    case 'CLEAR_NEW_ITEM_NOTIFICATION': {
+      return { ...state, newlyAffordableItem: null };
     }
     case 'SAVE_GAME': // This is just for triggering the effect
       return state;
@@ -415,6 +437,26 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
       }, 7000);
       return () => { if(messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current); };
   }, [state.playerName, state.goldenBean.active, t]);
+
+  // New Item Notification
+  useEffect(() => {
+    if (state.newlyAffordableItem && !state.isFirstLoad) {
+      const itemName = t(state.newlyAffordableItem.id) || state.newlyAffordableItem.name;
+      toast({
+        title: t('new_item_available'),
+        description: t('new_item_available_desc', { item: itemName }),
+        action: (
+          <button
+            onClick={() => dispatch({ type: 'TOGGLE_STORE_MODAL', payload: true })}
+            className="px-3 py-1 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            {t('go_to_store')}
+          </button>
+        ),
+      });
+      dispatch({ type: 'CLEAR_NEW_ITEM_NOTIFICATION' });
+    }
+  }, [state.newlyAffordableItem, state.isFirstLoad, t, toast]);
 
   return (
     <GameContext.Provider value={{ state, dispatch: enhancedDispatch }}>
