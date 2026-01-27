@@ -390,13 +390,9 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
             const savedData = localStorage.getItem(SAVE_KEY);
             if (savedData) {
                 const parsedData = JSON.parse(savedData);
-                if (parsedData.gameState.playerId === finalUser.uid) {
-                    dispatch({ type: 'LOAD_STATE', payload: parsedData });
-                } else {
-                    // 다른 사용자의 데이터일 경우, 새 게임을 시작합니다.
-                    localStorage.removeItem(SAVE_KEY);
-                    dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: finalUser } });
-                }
+                // playerId를 현재 사용자로 업데이트하고 로드
+                parsedData.gameState.playerId = finalUser.uid;
+                dispatch({ type: 'LOAD_STATE', payload: parsedData });
             } else {
                 // 저장된 데이터가 없으면 새 게임을 시작합니다.
                 dispatch({ type: 'NEW_GAME', payload: { initialState: getInitialState(t), user: finalUser } });
