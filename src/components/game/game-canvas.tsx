@@ -175,13 +175,14 @@ const GameCanvas = () => {
   }, [state, t, i18n.language]);
 
   return (
-    <div className={`relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm overflow-hidden ${state?.isFever ? 'fever-bg' : ''}`}>
+    <div className={`relative flex-grow flex-shrink-0 shadow-inner rounded-2xl bg-black/5 backdrop-blur-sm overflow-hidden flex items-center justify-center ${state?.isFever ? 'fever-bg' : ''}`}>
       <canvas
         ref={canvasRef}
         id="game"
         width="400"
         height="400"
-        className="w-full h-full cursor-pointer touch-none"
+        className="w-full max-w-[400px] aspect-square cursor-pointer touch-none select-none"
+        style={{ touchAction: 'manipulation' }}
         onMouseDown={handleInput}
         onTouchStart={handleInput}
       />
