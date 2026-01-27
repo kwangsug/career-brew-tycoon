@@ -330,10 +330,13 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
       items: items.map(item => ({ name: item.name, owned: item.owned, customName: item.customName })),
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-    if (state.playerId && state.playerName) {
+    const nameToSave = state.playerName || state.defaultPlayerName;
+    if (state.playerId && nameToSave) {
       const score = state.baseBps * (state.isFever ? 5 : 1);
-      console.log('🎮 Saving game - playerId:', state.playerId, 'authUid:', user?.uid, 'match:', state.playerId === user?.uid);
-      saveToFirebase(firestore, state.playerId, state.playerName, score);
+      console.log('🎮 Saving game - playerId:', state.playerId, 'name:', nameToSave, 'score:', score);
+      saveToFirebase(firestore, state.playerId, nameToSave, score);
+    } else {
+      console.log('🎮 Skip save - playerId:', state.playerId, 'nameToSave:', nameToSave);
     }
     if (showToast) {
       toast({ title: t('game_saved_title'), description: t('game_saved_desc') });
