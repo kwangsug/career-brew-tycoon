@@ -55,9 +55,14 @@ export default function RankingModal() {
 
   const loadNationalRanking = useCallback(async (showLoading = true) => {
     const currentState = stateRef.current;
-    if (!firestore || !currentState) return;
+    console.log('🏆 loadNationalRanking called:', { firestore: !!firestore, currentState: !!currentState });
+    if (!firestore || !currentState) {
+      console.log('🏆 Early return - missing firestore or state');
+      return;
+    }
     if (showLoading) setIsLoading(true);
     const ranks = await fetchRealRanking(firestore);
+    console.log('🏆 Fetched ranks:', ranks.length);
     setNationalRanking(ranks);
 
     // Check if I'm in the top 50, if not fetch my rank (check by id or name)
@@ -84,6 +89,7 @@ export default function RankingModal() {
 
   // Polling for real-time ranking updates (every 10 seconds)
   useEffect(() => {
+    console.log('🏆 Ranking useEffect:', { isOpen: state?.isRankingModalOpen, activeTab });
     if (state?.isRankingModalOpen && activeTab === 'national') {
       loadNationalRanking(true);
       pollingRef.current = setInterval(() => {
@@ -151,6 +157,15 @@ export default function RankingModal() {
     const myEntry = data.find(r => r.id === state?.playerId || r.name === myName);
     const amInList = !!myEntry;
     const currentScore = state ? (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1) : 0;
+
+    console.log('🏆 renderRankingList:', {
+      myPlayerId: state?.playerId,
+      myName,
+      amInList,
+      showMyRankIfNotInList,
+      dataLength: data.length,
+      firstFewNames: data.slice(0, 5).map(r => r.name)
+    });
 
     // Always show my entry if showMyRankIfNotInList is true
     const showMyEntry = showMyRankIfNotInList && !amInList && state;
