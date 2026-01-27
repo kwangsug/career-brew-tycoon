@@ -7,7 +7,7 @@ import type { Item } from '@/types/game';
 
 export const initialItems: Item[] = [
     // ROI 120 - Early game (slow start)
-    { id: 'item_0', name: 'Moka Pot', type: 'bps', basePrice: 30, val: 1, owned: 0, icon: 'ph_0', description: 'item_0_desc' },
+    { id: 'item_0', name: 'Moka Pot', type: 'bps', basePrice: 5, val: 1, owned: 0, icon: 'ph_0', description: 'item_0_desc' },
     { id: 'item_1', name: 'Rubber Gloves', type: 'click', basePrice: 60, val: 1, owned: 0, icon: 'ph_1', description: 'item_1_desc' },
     // ROI 115
     { id: 'item_2', name: 'Home Machine', type: 'bps', basePrice: 500, val: 4, owned: 0, icon: 'ph_2', description: 'item_2_desc' },
