@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { GameContext } from './game-provider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -46,24 +46,36 @@ export default function RankingModal() {
   const [isLoading, setIsLoading] = useState(false);
   const { t, i18n } = useI18n();
   const firestore = useFirestore();
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
+  const loadNationalRanking = useCallback(async (showLoading = true) => {
+    if (!firestore) return;
+    if (showLoading) setIsLoading(true);
+    const ranks = await fetchRealRanking(firestore);
+    setNationalRanking(ranks);
+    if (showLoading) setIsLoading(false);
+  }, [firestore]);
+
+  // Polling for real-time ranking updates (every 10 seconds)
   useEffect(() => {
     if (state?.isRankingModalOpen && activeTab === 'national') {
-      loadNationalRanking();
+      loadNationalRanking(true);
+      pollingRef.current = setInterval(() => {
+        loadNationalRanking(false); // Don't show loading skeleton on refresh
+      }, 10000);
     }
     if (state?.isRankingModalOpen && (activeTab === 'regional' || activeTab === 'friend')) {
       generateVirtualRanking(activeTab);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.isRankingModalOpen, activeTab]);
 
-  const loadNationalRanking = async () => {
-    if (!firestore) return;
-    setIsLoading(true);
-    const ranks = await fetchRealRanking(firestore);
-    setNationalRanking(ranks);
-    setIsLoading(false);
-  };
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.isRankingModalOpen, activeTab, loadNationalRanking]);
   
   const generateVirtualRanking = (type: 'regional' | 'friend') => {
     if (!state) return;
