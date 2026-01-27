@@ -443,16 +443,19 @@ const GameProviderContent = ({ children }: { children: ReactNode }) => {
     }
   }, [t, i18n.language, state.isFirstLoad]);
   
-  // Periodic Save
+  // Use ref to avoid re-creating timer on every state change
+  const handleSaveRef = useRef(handleSave);
+  handleSaveRef.current = handleSave;
+
+  // Periodic Save - runs once on mount
   useEffect(() => {
       console.log('🎮 Setting up auto-save timer (30s interval)');
-      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-      saveTimeoutRef.current = setInterval(() => {
+      const timer = setInterval(() => {
         console.log('🎮 Auto-save triggered');
-        handleSave(false);
+        handleSaveRef.current(false);
       }, 30000);
-      return () => { if(saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current); };
-  }, [handleSave]);
+      return () => clearInterval(timer);
+  }, []);
 
   // Periodic Rank Fetch
   useEffect(() => {
