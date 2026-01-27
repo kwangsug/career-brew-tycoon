@@ -61,7 +61,8 @@ export default function RankingModal() {
     setNationalRanking(ranks);
 
     // Check if I'm in the top 50, if not fetch my rank (check by id or name)
-    const amInList = ranks.some(r => r.id === currentState.playerId || r.name === currentState.playerName);
+    const myName = currentState.playerName || currentState.defaultPlayerName;
+    const amInList = ranks.some(r => r.id === currentState.playerId || r.name === myName);
     if (!amInList) {
       const currentScore = (currentState.baseBps + currentState.baseClick) * (currentState.isFever ? 5 : 1);
       const rank = await fetchMyRank(firestore, currentScore);
@@ -101,6 +102,7 @@ export default function RankingModal() {
         friend: t('friend_npcs', { returnObjects: true }) as string[]
     };
     const currentScore = (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1);
+    const myName = state.playerName || state.defaultPlayerName;
     let rankData: RankEntry[] = [];
     npcNames[type].forEach((name, i) => {
         let multiplier = (type === 'regional') ? Math.pow(10, (Math.random() * 4) - 2) : Math.random() * 2 + 0.1;
@@ -108,7 +110,7 @@ export default function RankingModal() {
         if (score < 10) score = Math.random() * 100;
         rankData.push({ id: `npc-${i}`, name: name, score: score });
     });
-    rankData.push({ id: state.playerId, name: state.playerName, score: currentScore });
+    rankData.push({ id: state.playerId, name: myName, score: currentScore });
     rankData.sort((a, b) => b.score - a.score);
     setVirtualRankings(prev => ({ ...prev, [type]: rankData }));
   };
@@ -134,8 +136,11 @@ export default function RankingModal() {
       ));
     }
 
+    // Use defaultPlayerName as fallback since playerName might be empty
+    const myName = state?.playerName || state?.defaultPlayerName || '';
+
     // Check by playerId first, then by name as fallback
-    const myEntry = data.find(r => r.id === state?.playerId || r.name === state?.playerName);
+    const myEntry = data.find(r => r.id === state?.playerId || r.name === myName);
     const amInList = !!myEntry;
     const currentScore = state ? (state.baseBps + state.baseClick) * (state.isFever ? 5 : 1) : 0;
 
@@ -149,7 +154,7 @@ export default function RankingModal() {
     return (
       <>
         {data.map((entry, index) => (
-          <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId || entry.name === state?.playerName} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
+          <RankItem key={entry.id} rank={index + 1} entry={entry} isMe={entry.id === state?.playerId || entry.name === myName} youText={t('you_text')} lang={i18n.language} perSecondText={t('per_second')} />
         ))}
         {showMyEntry && (
           <>
@@ -160,7 +165,7 @@ export default function RankingModal() {
             )}
             <RankItem
               rank={myRank || 1}
-              entry={{ id: state.playerId, name: state.playerName, score: currentScore }}
+              entry={{ id: state.playerId, name: myName, score: currentScore }}
               isMe={true}
               youText={t('you_text')}
               lang={i18n.language}
