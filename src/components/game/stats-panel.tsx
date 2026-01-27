@@ -7,13 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/locales/client';
 
-const StatRow = ({ label, value, badgeClass }: { label: string, value: string, badgeClass: string }) => (
-  <div className="flex flex-col justify-center items-center font-bold text-sm">
-    <span>{label}</span>
-    <Badge className={`text-base min-w-[70px] justify-center mt-1 ${badgeClass}`}>{value}</Badge>
-  </div>
-);
-
 export default function StatsPanel() {
   const { state, dispatch } = useContext(GameContext);
   const { t, i18n } = useI18n();
@@ -63,9 +56,9 @@ export default function StatsPanel() {
           {t('manual_roast')}: {formatNum(manualTotal, i18n.language)}
         </div>
 
-        <div className="flex justify-center gap-4 pt-2 border-t border-dashed">
-          <StatRow label={`👆 ${t('per_click')}`} value={formatNum(currentClick, i18n.language)} badgeClass="bg-[#ffe0b2] text-[#e65100] border-[#ffb74d] hover:bg-[#ffe0b2]/80" />
-          <StatRow label={`⚙️ ${t('per_second')}`} value={formatNum(currentBps, i18n.language)} badgeClass="bg-[#e0f2f1] text-[#00695c] border-[#4db6ac] hover:bg-[#e0f2f1]/80" />
+        <div className="flex justify-center items-center gap-4 pt-2 border-t border-dashed text-sm font-bold">
+          <span>👆 {t('per_click')} <span className="text-[#e65100]">{formatNum(currentClick, i18n.language)}</span></span>
+          <span>⚙️ {t('per_second')} <span className="text-[#00695c]">{formatNum(currentBps, i18n.language)}</span></span>
         </div>
         
         <div className={`text-sm font-bold h-5 transition-all duration-500 ${goldenBean.active ? 'gold-alert' : 'opacity-80'}`}>
