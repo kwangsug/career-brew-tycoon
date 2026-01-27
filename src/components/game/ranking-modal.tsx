@@ -63,6 +63,14 @@ export default function RankingModal() {
     // Check if I'm in the top 50, if not fetch my rank (check by id or name)
     const myName = currentState.playerName || currentState.defaultPlayerName;
     const amInList = ranks.some(r => r.id === currentState.playerId || r.name === myName);
+
+    console.log('🏆 Ranking check:', {
+      myPlayerId: currentState.playerId,
+      myName,
+      amInList,
+      ranksInList: ranks.map(r => ({ id: r.id, name: r.name })).slice(0, 5)
+    });
+
     if (!amInList) {
       const currentScore = (currentState.baseBps + currentState.baseClick) * (currentState.isFever ? 5 : 1);
       const rank = await fetchMyRank(firestore, currentScore);
