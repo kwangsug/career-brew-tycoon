@@ -7,3 +7,8 @@ export const firebaseConfig = {
   "messagingSenderId": "489775542126",
   "measurementId": "G-438QWTEBLY"
 };
+
+// Custom domains for Firebase Auth
+// Add these domains in Firebase Console > Authentication > Settings > Authorized domains:
+// - careerbrew.kwang.com
+// - career-brew.kwang.com
