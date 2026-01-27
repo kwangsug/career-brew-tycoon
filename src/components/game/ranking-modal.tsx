@@ -49,16 +49,21 @@ export default function RankingModal() {
   const firestore = useFirestore();
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Use refs to avoid recreating callback on every state change
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
   const loadNationalRanking = useCallback(async (showLoading = true) => {
-    if (!firestore || !state) return;
+    const currentState = stateRef.current;
+    if (!firestore || !currentState) return;
     if (showLoading) setIsLoading(true);
     const ranks = await fetchRealRanking(firestore);
     setNationalRanking(ranks);
 
     // Check if I'm in the top 50, if not fetch my rank
-    const amInList = ranks.some(r => r.id === state.playerId);
+    const amInList = ranks.some(r => r.id === currentState.playerId);
     if (!amInList) {
-      const currentScore = state.baseBps * (state.isFever ? 5 : 1);
+      const currentScore = currentState.baseBps * (currentState.isFever ? 5 : 1);
       const rank = await fetchMyRank(firestore, currentScore);
       setMyRank(rank);
     } else {
@@ -66,7 +71,7 @@ export default function RankingModal() {
     }
 
     if (showLoading) setIsLoading(false);
-  }, [firestore, state]);
+  }, [firestore]);
 
   // Polling for real-time ranking updates (every 10 seconds)
   useEffect(() => {
@@ -87,7 +92,7 @@ export default function RankingModal() {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.isRankingModalOpen, activeTab, loadNationalRanking]);
+  }, [state?.isRankingModalOpen, activeTab]);
   
   const generateVirtualRanking = (type: 'regional' | 'friend') => {
     if (!state) return;
