@@ -116,7 +116,8 @@ export default function RankingModal() {
   };
   
   const renderRankingList = (data: RankEntry[], showMyRankIfNotInList = false) => {
-    if (isLoading) {
+    // Only show skeleton on first load when there's no data yet
+    if (isLoading && data.length === 0) {
       return Array.from({ length: 10 }).map((_, i) => (
         <div key={i} className="flex items-center justify-between p-2">
           <div className="flex items-center gap-3">
