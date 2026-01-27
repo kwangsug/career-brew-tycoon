@@ -42,9 +42,8 @@ export function formatNum(num: number, lang: string = 'en'): string {
             return `${mainPart}${units[unitIndex]}`;
         } else {
              if (unitIndex > 0) {
-                const remainderFormatted = Math.floor(remainder / 100) * 100;
-                 if (remainderFormatted > 0) {
-                    return `${mainPart}${units[unitIndex]} ${remainderFormatted.toLocaleString('ko-KR')}${units[unitIndex-1]}`;
+                 if (remainder > 0) {
+                    return `${mainPart}${units[unitIndex]} ${remainder.toLocaleString('ko-KR')}`;
                  } else {
                     return `${mainPart}${units[unitIndex]}`;
                  }
