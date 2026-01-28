@@ -59,12 +59,24 @@ export default function RankingModal() {
       return;
     }
     if (showLoading) setIsLoading(true);
-    const ranks = await fetchRealRanking(firestore);
+    let ranks = await fetchRealRanking(firestore);
+
+    // 동점자 그룹에서 내 playerId가 가장 위로 오도록 정렬
+    const myId = currentState.playerId;
+    const myName = currentState.playerName || currentState.defaultPlayerName;
+    ranks = ranks.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      // 동점자 그룹: 내 playerId가 있으면 우선
+      if (a.score === b.score) {
+        if (a.id === myId) return -1;
+        if (b.id === myId) return 1;
+      }
+      return 0;
+    });
     setNationalRanking(ranks);
 
     // Check if I'm in the top 50 - prioritize playerId match, then name match
-    const myName = currentState.playerName || currentState.defaultPlayerName;
-    const myEntryById = ranks.find(r => r.id === currentState.playerId);
+    const myEntryById = ranks.find(r => r.id === myId);
     const myEntryByName = !myEntryById ? ranks.find(r => r.name === myName) : null;
     const amInList = !!(myEntryById || myEntryByName);
 

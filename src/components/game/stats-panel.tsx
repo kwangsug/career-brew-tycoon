@@ -64,11 +64,21 @@ export default function StatsPanel() {
           {t('manual_roast')}: {formatNum(manualTotal, i18n.language)}
         </div>
 
-        {/* 클릭당 00 | 초당 00 가로 배치 */}
+        {/* 클릭당 00 | 초당 00 가로 배치, 숫자는 Badge로 감싸기 */}
         <div className="flex justify-center gap-2 pt-2 border-t border-dashed text-base font-bold">
-          <span>👆 {t('per_click')} <span className="text-[#e65100]">{formatNum(currentClick, i18n.language)}</span></span>
+          <span className="flex items-center gap-1">
+            👆 {t('per_click')}
+            <Badge className="bg-[#ffe0b2] text-[#e65100] border-[#ffb74d] hover:bg-[#ffe0b2]/80 text-base min-w-[48px] justify-center rounded-full px-3 py-1">
+              {formatNum(currentClick, i18n.language)}
+            </Badge>
+          </span>
           <span className="mx-2">|</span>
-          <span>⚙️ {t('per_second')} <span className="text-[#00695c]">{formatNum(currentBps, i18n.language)}</span></span>
+          <span className="flex items-center gap-1">
+            ⚙️ {t('per_second')}
+            <Badge className="bg-[#e0f2f1] text-[#00695c] border-[#4db6ac] hover:bg-[#e0f2f1]/80 text-base min-w-[48px] justify-center rounded-full px-3 py-1">
+              {formatNum(currentBps, i18n.language)}
+            </Badge>
+          </span>
         </div>
         
         <div className={`text-sm font-bold h-5 transition-all duration-500 ${goldenBean.active ? 'gold-alert' : 'opacity-80'}`}>
